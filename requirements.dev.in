@@ -7,3 +7,4 @@ pydocstyle
 pytest
 pytest-mock
 pytest-cov
+twine
