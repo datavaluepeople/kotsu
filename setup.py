@@ -19,6 +19,7 @@ setup(
     long_description=README,
     long_description_content_type="text/markdown",
     author="datavaluepeople",
+    author_email="opensource@datavaluepeople.com",
     url="https://github.com/datavaluepeople/comp",
     license="MIT",
     packages=find_packages(),
