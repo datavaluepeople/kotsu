@@ -4,7 +4,7 @@ on:
   push:
     # Release when a tag is pushed (should work with GitHub "release" button also)
     tags:
-      - 'v/[0-9]+(\.[0-9]+)*(-alpha\.[0-9]+)?/'
+      - '/v[0-9]+(\.[0-9]+)*(-alpha\.[0-9]+)?/'
 
 jobs:
   build:
