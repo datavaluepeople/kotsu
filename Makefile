@@ -13,10 +13,10 @@ upgrade:
 
 lint:
 	flake8 .
-	pydocstyle comp
+	pydocstyle kotsu
 	isort --check-only .
 	black --check .
-	mypy comp
+	mypy kotsu
 
 test:
 	pytest tests
