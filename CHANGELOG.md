@@ -10,5 +10,5 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 ### Added
 - Stub module
 
-[Unreleased]: https://github.com/datavaluepeople/truman/compare/v0.0.1-alpha.1...HEAD
-[v0.0.1-alpha.1]: https://github.com/datavaluepeople/truman/releases/tag/v0.0.1-alpha.1
+[Unreleased]: https://github.com/datavaluepeople/kotsu/compare/v0.0.1-alpha.1...HEAD
+[v0.0.1-alpha.1]: https://github.com/datavaluepeople/kotsu/releases/tag/v0.0.1-alpha.1
