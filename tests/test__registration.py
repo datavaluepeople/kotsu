@@ -1,6 +1,6 @@
 import pytest
 
-from kotsu import registration
+from kotsu import _registration as registration
 
 
 def fake_entity_factory(param_1, param_2):
@@ -19,8 +19,8 @@ class FakeEntity:
     [
         fake_entity_factory,
         FakeEntity,
-        "tests.test_registration:fake_entity_factory",
-        "tests.test_registration:FakeEntity",
+        "tests.test__registration:fake_entity_factory",
+        "tests.test__registration:FakeEntity",
     ],
 )
 def test_registration(entry_point):
