@@ -1,4 +1,4 @@
-name: make
+name: Run CI
 
 on:
   push:
