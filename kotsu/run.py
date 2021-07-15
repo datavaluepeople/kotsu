@@ -3,6 +3,7 @@ from typing import Tuple
 
 import time
 
+from kotsu import store
 from kotsu.registration import ModelRegistry, ValidationRegistry
 
 
@@ -23,11 +24,23 @@ def run(
             output artefacts of the validations and models.
         run_params: A dictionary of optional run parameters.
     """
+    results_list = []
     for validation_spec in validation_registry.all():
         for model_spec in model_registry.all():
             validation = validation_spec.make()
             model = model_spec.make()
             results, elapsed_secs = _run_validation_model(validation, model, run_params)
+            results.update(
+                {
+                    "validation_id": validation_spec.id,
+                    "model_id": model_spec.id,
+                    "runtime_secs": elapsed_secs,
+                }
+            )
+            results_list.append(results)
+    store.write(
+        results_list, store_directory, to_front_cols=["validation_id", "model_id", "runtime_secs"]
+    )
 
 
 def _run_validation_model(validation, model, run_params: dict = {}) -> Tuple[dict, float]:
