@@ -1,26 +1,23 @@
-"""Registration of agents.
+"""Registration of entities (models, or validations).
 
-Enables registering specifications of agents and parameters combinations, under a unique ID,
-which can be passed to Truman's run interface.
+Enables registering specifications of entities and parameters combinations, under a unique ID,
+which can be passed to kotsu's run interface.
 
 Based on: https://github.com/openai/gym/blob/master/gym/envs/registration.py
 """
 from typing import Callable, Optional, Union
-from truman.typing import Agent
 
 import importlib
 import logging
 import re
 
-from gym import Env
-
 
 logger = logging.getLogger(__name__)
 
-# A unique ID for an agent; a name followed by a version number.
-# Agent-name is group 1, version is group 2.
-# [username/](agent-name)-v(version)
-agent_id_re = re.compile(r"^(?:[\w:-]+\/)?([\w:.-]+)-v(\d+)$")
+# A unique ID for an entity; a name followed by a version number.
+# Entity-name is group 1, version is group 2.
+# [username/](entity-name)-v(version)
+entity_id_re = re.compile(r"^(?:[\w:-]+\/)?([\w:.-]+)-v(\d+)$")
 
 
 def _load(name: str):
@@ -35,23 +32,23 @@ def _load(name: str):
     return fn
 
 
-class AgentSpec:
-    """A specification for a particular instance of an agent.
+class EntitySpec:
+    """A specification for a particular instance of an entity.
 
-    Used to register agent and parameters full specification for evaluations.
+    Used to register entity and parameters full specification for evaluations.
 
     Args:
-        id: A unique agent ID
-            Required format; [username/](agent-name)-v(version)
+        id: A unique entity ID
+            Required format; [username/](entity-name)-v(version)
             [username/] is optional.
-        entry_point: The python entrypoint of the agent class. Should be one of:
+        entry_point: The python entrypoint of the entity class. Should be one of:
             - the string path to the python object (e.g.module.name:factory_func, or
               module.name:Class)
             - the python object (class or factory) itself
-            Should be set to `None` to denote that the agent is now defunct, replaced by a newer
+            Should be set to `None` to denote that the entity is now defunct, replaced by a newer
             version.
-        nondeterministic: Whether this agent is non-deterministic even after seeding
-        kwargs: The kwargs to pass to the agent entry point when instantiating the agent
+        nondeterministic: Whether this entity is non-deterministic even after seeding
+        kwargs: The kwargs to pass to the entity entry point when instantiating the entity
     """
 
     def __init__(
@@ -66,19 +63,19 @@ class AgentSpec:
         self.nondeterministic = nondeterministic
         self._kwargs = {} if kwargs is None else kwargs
 
-        match = agent_id_re.search(id)
+        match = entity_id_re.search(id)
         if not match:
             raise ValueError(
-                f"Attempted to register malformed agent ID: {id}. "
-                f"(Currently all IDs must be of the form {agent_id_re.pattern}.)"
+                f"Attempted to register malformed entity ID: {id}. "
+                f"(Currently all IDs must be of the form {entity_id_re.pattern}.)"
             )
 
-    def make(self, env: Optional[Env] = None, **kwargs) -> Agent:
-        """Instantiates an instance of the agent compatible with given env."""
+    def make(self, **kwargs):
+        """Instantiates an instance of the entity."""
         if self.entry_point is None:
             raise ValueError(
-                f"Attempting to make deprecated agent {self.id}. "
-                "(HINT: is there a newer registered version of this agent?)"
+                f"Attempting to make deprecated entity {self.id}. "
+                "(HINT: is there a newer registered version of this entity?)"
             )
         _kwargs = self._kwargs.copy()
         _kwargs.update(kwargs)
@@ -86,35 +83,35 @@ class AgentSpec:
             factory = self.entry_point
         else:
             factory = _load(self.entry_point)
-        agent = factory(env, **_kwargs)
+        entity = factory(**_kwargs)
 
-        return agent
+        return entity
 
     def __repr__(self):
-        return "AgentSpec({})".format(self.id)
+        return "EntitySpec({})".format(self.id)
 
 
-class AgentRegistry:
-    """Register an agent by ID.
+class EntityRegistry:
+    """Register an entity by ID.
 
-    IDs should remain stable over time and should be guaranteed to resolve to the same agent
+    IDs should remain stable over time and should be guaranteed to resolve to the same entity
     dynamics (or be desupported).
     """
 
     def __init__(self):
-        self.agent_specs = {}
+        self.entity_specs = {}
 
-    def make(self, id: str, env: Optional[Env] = None, **kwargs) -> Agent:
-        """Instantiate an instance of an agent of the given ID compatible with the given env."""
-        logging.info(f"Making new agent: {id} ({kwargs})")
+    def make(self, id: str, **kwargs):
+        """Instantiate an instance of an entity of the given ID."""
+        logging.info(f"Making new entity: {id} ({kwargs})")
         try:
-            return self.agent_specs[id].make(env, **kwargs)
+            return self.entity_specs[id].make(**kwargs)
         except KeyError:
-            raise KeyError(f"No registered agent with ID {id}")
+            raise KeyError(f"No registered entity with ID {id}")
 
     def all(self):
-        """Return all the agents in the registry."""
-        return self.agent_specs.values()
+        """Return all the entitys in the registry."""
+        return self.entity_specs.values()
 
     def register(
         self,
@@ -123,21 +120,21 @@ class AgentRegistry:
         nondeterministic: bool = False,
         kwargs: Optional[dict] = None,
     ):
-        """Register an agent.
+        """Register an entity.
 
         Args:
-            id: A unique agent ID
-                Required format; [username/](agent-name)-v(version)
+            id: A unique entity ID
+                Required format; [username/](entity-name)-v(version)
                 [username/] is optional.
-            entry_point: The python entrypoint of the agent class. Should be one of:
+            entry_point: The python entrypoint of the entity class. Should be one of:
                 - the string path to the python object (e.g.module.name:factory_func, or
                   module.name:Class)
                 - the python object (class or factory) itself
-                Should be set to `None` to denote that the agent is now defunct, replaced by a
+                Should be set to `None` to denote that the entity is now defunct, replaced by a
                 newer version.
-            nondeterministic: Whether this agent is non-deterministic even after seeding
-            kwargs: The kwargs to pass to the agent entry point when instantiating the agent
+            nondeterministic: Whether this entity is non-deterministic even after seeding
+            kwargs: The kwargs to pass to the entity entry point when instantiating the entity
         """
-        if id in self.agent_specs:
+        if id in self.entity_specs:
             raise ValueError(f"Cannot re-register ID {id}")
-        self.agent_specs[id] = AgentSpec(id, entry_point, nondeterministic, kwargs)
+        self.entity_specs[id] = EntitySpec(id, entry_point, nondeterministic, kwargs)
