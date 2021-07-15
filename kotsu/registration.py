@@ -32,7 +32,7 @@ def _load(name: str):
     return fn
 
 
-class EntitySpec:
+class _Spec:
     """A specification for a particular instance of an entity.
 
     Used to register entity and parameters full specification for evaluations.
@@ -88,10 +88,10 @@ class EntitySpec:
         return entity
 
     def __repr__(self):
-        return "EntitySpec({})".format(self.id)
+        return "Spec({})".format(self.id)
 
 
-class EntityRegistry:
+class _Registry:
     """Register an entity by ID.
 
     IDs should remain stable over time and should be guaranteed to resolve to the same entity
@@ -137,4 +137,11 @@ class EntityRegistry:
         """
         if id in self.entity_specs:
             raise ValueError(f"Cannot re-register ID {id}")
-        self.entity_specs[id] = EntitySpec(id, entry_point, nondeterministic, kwargs)
+        self.entity_specs[id] = _Spec(id, entry_point, nondeterministic, kwargs)
+
+
+ModelSpec = _Spec
+ModelRegistry = _Registry
+
+ValidationSpec = _Spec
+ValidationRegistry = _Registry
