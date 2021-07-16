@@ -1,10 +1,14 @@
 """Interface for running a registry of models on a registry of validations."""
 from typing import Tuple
 
+import logging
 import time
 
 from kotsu import store
 from kotsu.registration import ModelRegistry, ValidationRegistry
+
+
+logger = logging.getLogger(__name__)
 
 
 def run(
@@ -27,6 +31,7 @@ def run(
     results_list = []
     for validation_spec in validation_registry.all():
         for model_spec in model_registry.all():
+            logger.info(f"Running validation - model: {validation_spec.id} - {model_spec.id}")
             validation = validation_spec.make()
             model = model_spec.make()
             results, elapsed_secs = _run_validation_model(validation, model, run_params)
