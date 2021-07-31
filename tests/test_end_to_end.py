@@ -1,8 +1,11 @@
 """An end to end example and test."""
 from typing import Callable
 
+import os
+import pickle
+
 from sklearn import datasets, svm
-from sklearn.model_selection import cross_val_score
+from sklearn.model_selection import cross_validate
 
 from kotsu import run
 from kotsu.registration import ModelRegistry, ValidationRegistry
@@ -28,13 +31,21 @@ validation_registry = ValidationRegistry()
 def factory_iris_cross_val(folds: int) -> Callable:
     """Factory for iris cross validation."""
 
-    def iris_cross_val(model) -> dict:
+    def iris_cross_val(model, artefacts_directory=None) -> dict:
         """Iris classification cross validation."""
         X, y = datasets.load_iris(return_X_y=True)
-        scores = cross_val_score(model, X, y, cv=folds)
-        results = {f"fold_{i}_score": score for i, score in enumerate(scores)}
-        results["mean_score"] = scores.mean()
-        results["std_score"] = scores.std()
+        scores = cross_validate(model, X, y, cv=folds, return_estimator=True)
+
+        if artefacts_directory:
+            os.makedirs(artefacts_directory)
+            # Save the trained models from each fold
+            for fold_idx, model in enumerate(scores["estimator"]):
+                with open(artefacts_directory + f"model_from_fold_{fold_idx}.pk", "wb") as handle:
+                    pickle.dump(model, handle)
+
+        results = {f"fold_{i}_score": score for i, score in enumerate(scores["test_score"])}
+        results["mean_score"] = scores["test_score"].mean()
+        results["std_score"] = scores["test_score"].std()
         return results
 
     return iris_cross_val
@@ -54,4 +65,8 @@ validation_registry.register(
 
 
 def test_run(tmpdir):
-    run.run(model_registry, validation_registry, tmpdir)
+    run.run(model_registry, validation_registry, str(tmpdir) + "/")
+
+
+def test_run_save_models(tmpdir):
+    run.run(model_registry, validation_registry, str(tmpdir) + "/", pass_artefacts_directory=True)
