@@ -1,9 +1,126 @@
+# kotsu: lightweight framework for structuring model validation
+
 [![PyPI version](https://img.shields.io/pypi/v/kotsu.svg)](https://pypi.org/project/kotsu/)
 ![lint-test status](https://github.com/datavaluepeople/kotsu/actions/workflows/run-ci.yml/badge.svg?branch=main)
 [![codecov](https://codecov.io/gh/datavaluepeople/kotsu/branch/main/graph/badge.svg?token=3W8T5OSRZZ)](https://codecov.io/gh/datavaluepeople/kotsu)
 
-# kotsu
-Lightweight framework for structured and repeatable model validation
+## What is it?
+
+**kotsu** is Python package that provides a lightweight and flexible framework to structure
+validating and comparing machine learning models. It aims to provide the skeleton on which to
+develop any kinds of models and to validate them in a robust and repeatable way, **without bloat or
+overheads**. Its flexibility fully leaves open usage with **any model interface**, and any
+complexity of validation, while the structure it provides **avoids common pitfalls** that occur
+when attempting to make fair comparisons between models.
+
+## Main Feature
+
+  - Register a model with hyperparameters to a unique ID
+  - Register validations to a unique ID
+  - Run all registered models through all registered validations, and have the results compiled and
+    stored into a dataframe
+  - Optionally passes an `artefacts_directory` to your validations, for storing of outputs for
+    further analysis, e.g. trained models, model predictions on test data sets
+  - Doesn't enforce any constraints or requirements on your models' interfaces
+  - Pure Python package, with no other setup or configuration of other systems required
+
+## Usage
+
+Import your packages for modelling and kotsu:
+
+```python
+from sklearn import datasets, svm
+from sklearn.model_selection import cross_val_score
+
+import kotsu
+```
+
+Register your competing models. Here we register two Support Vector Classifiers with different
+hyper-parameters:
+
+```python
+model_registry = kotsu.registration.ModelRegistry()
+
+model_registry.register(
+    id="SCV-v1",
+    entry_point=svm.SVC,
+    kwargs={"kernel": "linear", "C": 1, "random_state": 1},
+)
+
+model_registry.register(
+    id="SCV-v2",
+    entry_point=svm.SVC,
+    kwargs={"kernel": "linear", "C": 0.5, "random_state": 1},
+)
+```
+
+Register your validations. You can register multiple if you want to compare models over different
+tests, e.g. on different datasets. Your validation should take an instance of your models as an
+argument and return a dictionary containing the results. Here we register two Cross-Validation
+validations with different numbers of folds:
+
+```python
+validation_registry = kotsu.registration.ValidationRegistry()
+
+
+def factory_iris_cross_valdation(folds: int):
+    """Factory for iris cross validation."""
+
+    def iris_cross_valdation(model) -> dict:
+        """Iris classification cross validation."""
+        X, y = datasets.load_iris(return_X_y=True)
+        scores = cross_val_score(model, X, y, cv=folds)
+        results = {f"fold_{i}_score": score for i, score in enumerate(scores)}
+        results["mean_score"] = scores.mean()
+        results["std_score"] = scores.std()
+        return results
+
+    return iris_cross_val
+
+
+validation_registry.register(
+    id="iris_cross_val-v1",
+    entry_point=factory_iris_cross_valdation,
+    kwargs={"folds": 5},
+)
+
+validation_registry.register(
+    id="iris_cross_val-v2",
+    entry_point=factory_iris_cross_valdation,
+    kwargs={"folds": 10},
+)
+```
+
+Run the models through the validations, choosing the current directory as location for the output
+of the results:
+
+```python
+kotsu.run(model_registry, validation_registry, "./")
+```
+
+Then find the results from each model-validation combination in a dataframe written to the current
+directory.
+
+#### Documentation on interfaces
+
+See [kotsu.typing](https://github.com/datavaluepeople/kotsu/blob/main/kotsu/typing.py) for
+documentation on the main entities; Models, Validations, and Results, and their interfaces.
+
+#### Comprehensive example
+
+See the [end to end test](https://github.com/datavaluepeople/kotsu/blob/main/tests/test_end_to_end.py)
+for a more comprehensive example usage of kotsu, which includes storing the trained models from
+each model-validation run.
+
+## Where to get it
+
+The source code is currently hosted on GitHub at: https://github.com/datavaluepeople/kotsu
+
+The latest released version of the package can be installed from PyPI with:
+
+```sh
+pip install kotsu
+```
 
 ## License
 
