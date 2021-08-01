@@ -13,7 +13,7 @@ from typing import Any, Callable, Dict, Union
 # `{"average_score": _, "standard_deviation_scores": _, "fold_1_score": _, "fold_2_score"...}`
 Results = Dict[str, Union[float, str]]
 
-# Model's within kostu are not constrained in any way. It is up to the user to write Model's that
+# Models within kotsu are not constrained in any way. It is up to the user to write Models that
 # have an interface compatible with their Validations.
 Model = Any
 
