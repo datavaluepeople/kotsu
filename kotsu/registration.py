@@ -5,7 +5,8 @@ which can be passed to kotsu's run interface.
 
 Based on: https://github.com/openai/gym/blob/master/gym/envs/registration.py
 """
-from typing import Callable, Optional, Union
+from typing import Callable, Generic, Optional, TypeVar, Union
+from kotsu.typing import Model, Validation
 
 import importlib
 import logging
@@ -13,6 +14,9 @@ import re
 
 
 logger = logging.getLogger(__name__)
+
+
+Entity = TypeVar("Entity")
 
 # A unique ID for an entity; a name followed by a version number.
 # Entity-name is group 1, version is group 2.
@@ -32,7 +36,7 @@ def _load(name: str):
     return fn
 
 
-class _Spec:
+class _Spec(Generic[Entity]):
     """A specification for a particular instance of an entity.
 
     Used to register entity and parameters full specification for evaluations.
@@ -70,7 +74,7 @@ class _Spec:
                 f"(Currently all IDs must be of the form {entity_id_re.pattern}.)"
             )
 
-    def make(self, **kwargs):
+    def make(self, **kwargs) -> Entity:
         """Instantiates an instance of the entity."""
         if self.entry_point is None:
             raise ValueError(
@@ -91,7 +95,7 @@ class _Spec:
         return "Spec({})".format(self.id)
 
 
-class _Registry:
+class _Registry(Generic[Entity]):
     """Register an entity by ID.
 
     IDs should remain stable over time and should be guaranteed to resolve to the same entity
@@ -101,7 +105,7 @@ class _Registry:
     def __init__(self):
         self.entity_specs = {}
 
-    def make(self, id: str, **kwargs):
+    def make(self, id: str, **kwargs) -> Entity:
         """Instantiate an instance of an entity of the given ID."""
         logging.info(f"Making new entity: {id} ({kwargs})")
         try:
@@ -140,8 +144,8 @@ class _Registry:
         self.entity_specs[id] = _Spec(id, entry_point, nondeterministic, kwargs)
 
 
-ModelSpec = _Spec
-ModelRegistry = _Registry
+ModelSpec = _Spec[Model]
+ModelRegistry = _Registry[Model]
 
-ValidationSpec = _Spec
-ValidationRegistry = _Registry
+ValidationSpec = _Spec[Validation]
+ValidationRegistry = _Registry[Validation]

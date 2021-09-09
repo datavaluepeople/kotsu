@@ -1,12 +1,13 @@
 """Functionality for storing validation results."""
 from typing import List
+from kotsu.typing import Results
 
 import os.path
 
 import pandas as pd
 
 
-def write(results_list: List[dict], store_directory: str, to_front_cols: List[str]):
+def write(results_list: List[Results], store_directory: str, to_front_cols: List[str]):
     """Write the results to the store directory."""
     df = pd.DataFrame(results_list)
 
