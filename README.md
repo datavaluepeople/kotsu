@@ -8,10 +8,10 @@
 
 **kotsu** is Python package that provides a lightweight and flexible framework to structure
 validating and comparing machine learning models. It aims to provide the skeleton on which to
-develop any kinds of models and to validate them in a robust and repeatable way, **without bloat or
-overheads**. Its flexibility fully leaves open usage with **any model interface**, and any
-complexity of validation, while the structure it provides **avoids common pitfalls** that occur
-when attempting to make fair comparisons between models.
+develop models and to validate them in a robust and repeatable way, **minimizing
+bloat or overhead**. Its flexibility allows usage with **any model interface** and any
+validation technique, no matter how complex. The structure it provides **avoids
+common pitfalls** that occur when attempting to make fair comparisons between models.
 
 ## Main Feature
 
