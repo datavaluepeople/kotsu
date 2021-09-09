@@ -10,10 +10,7 @@ def write(results_list: List[dict], store_directory: str, to_front_cols: List[st
     """Write the results to the store directory."""
     df = pd.DataFrame(results_list)
 
-    cols = list(df)
-    for col in reversed(to_front_cols):
-        cols.insert(0, cols.pop(cols.index(col)))
-    df = df.loc[:, cols]
+    df = df[to_front_cols + [col for col in df.columns if col not in to_front_cols]]
 
     results_file_path = os.path.join(store_directory, "validation_results.csv")
     df.to_csv(results_file_path, index=False)
