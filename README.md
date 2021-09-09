@@ -18,7 +18,7 @@ common pitfalls** that occur when attempting to make fair comparisons between mo
   - Register a model with hyperparameters to a unique ID
   - Register validations to a unique ID
   - Run all registered models through all registered validations, and have the results compiled and
-    stored into a dataframe
+    stored as a CSV
   - Optionally passes an `artefacts_directory` to your validations, for storing of outputs for
     further analysis, e.g. trained models or model predictions on test data sets
   - Doesn't enforce any constraints or requirements on your models' interfaces
