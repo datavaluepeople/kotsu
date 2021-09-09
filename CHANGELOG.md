@@ -6,9 +6,18 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
+## [v0.1.0] - 2021-09-09
+### Added
+- Registry interfaces
+- Implement main run and store interfaces
+- Typing for core entities
+- Implement artefacts directory functionality
+- Add proper README
+
 ## [v0.0.1-alpha.1] - 2021-07-13
 ### Added
 - Stub module
 
-[Unreleased]: https://github.com/datavaluepeople/kotsu/compare/v0.0.1-alpha.1...HEAD
+[Unreleased]: https://github.com/datavaluepeople/kotsu/compare/v0.1.0...HEAD
+[v0.1.0]: https://github.com/datavaluepeople/kotsu/compare/v0.0.1-alpha.1...v0.1.0
 [v0.0.1-alpha.1]: https://github.com/datavaluepeople/kotsu/releases/tag/v0.0.1-alpha.1
