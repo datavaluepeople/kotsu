@@ -24,6 +24,16 @@ common pitfalls** that occur when attempting to make fair comparisons between mo
   - Doesn't enforce any constraints or requirements on your models' interfaces
   - Pure Python package, with no other setup or configuration of other systems required
 
+## Where to get it
+
+The source code is currently hosted on GitHub at: https://github.com/datavaluepeople/kotsu
+
+The latest released version of the package can be installed from PyPI with:
+
+```sh
+pip install kotsu
+```
+
 ## Usage
 
 **Import kotsu and your packages for modelling:**
@@ -114,16 +124,6 @@ documentation on the main entities; Models, Validations, and Results, and their 
 See the [end to end test](https://github.com/datavaluepeople/kotsu/blob/main/tests/test_end_to_end.py)
 for a more comprehensive example usage of kotsu, which includes storing the trained models from
 each model-validation run.
-
-## Where to get it
-
-The source code is currently hosted on GitHub at: https://github.com/datavaluepeople/kotsu
-
-The latest released version of the package can be installed from PyPI with:
-
-```sh
-pip install kotsu
-```
 
 ## License
 
