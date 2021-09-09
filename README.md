@@ -101,7 +101,7 @@ We choose the current directory as the location for writing the results.
 kotsu.run(model_registry, validation_registry, "./")
 ```
 
-Then find the results from each model-validation combination in a dataframe written to the current
+Then find the results from each model-validation combination in a CSV written to the current
 directory.
 
 #### Documentation on interfaces
