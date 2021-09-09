@@ -63,10 +63,10 @@ validations with different numbers of folds:
 validation_registry = kotsu.registration.ValidationRegistry()
 
 
-def factory_iris_cross_valdation(folds: int):
+def factory_iris_cross_validation(folds: int):
     """Factory for iris cross validation."""
 
-    def iris_cross_valdation(model) -> dict:
+    def iris_cross_validation(model) -> dict:
         """Iris classification cross validation."""
         X, y = datasets.load_iris(return_X_y=True)
         scores = cross_val_score(model, X, y, cv=folds)
@@ -75,18 +75,18 @@ def factory_iris_cross_valdation(folds: int):
         results["std_score"] = scores.std()
         return results
 
-    return iris_cross_val
+    return iris_cross_validation
 
 
 validation_registry.register(
-    id="iris_cross_val-v1",
-    entry_point=factory_iris_cross_valdation,
+    id="iris_cross_validation-v1",
+    entry_point=factory_iris_cross_validation,
     kwargs={"folds": 5},
 )
 
 validation_registry.register(
-    id="iris_cross_val-v2",
-    entry_point=factory_iris_cross_valdation,
+    id="iris_cross_validation-v2",
+    entry_point=factory_iris_cross_validation,
     kwargs={"folds": 10},
 )
 ```
