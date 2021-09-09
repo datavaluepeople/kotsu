@@ -26,7 +26,7 @@ common pitfalls** that occur when attempting to make fair comparisons between mo
 
 ## Usage
 
-Import your packages for modelling and kotsu:
+**Import kotsu and your packages for modelling:**
 
 ```python
 import kotsu
@@ -34,8 +34,9 @@ from sklearn import datasets, svm
 from sklearn.model_selection import cross_val_score
 ```
 
-Register your competing models. Here we register two Support Vector Classifiers with different
-hyper-parameters:
+**Register your competing models:**
+
+Here we register two Support Vector Classifiers with different hyper-parameters.
 
 ```python
 model_registry = kotsu.registration.ModelRegistry()
@@ -53,10 +54,12 @@ model_registry.register(
 )
 ```
 
-Register your validations. You can register multiple if you want to compare models over different
-tests, e.g. on different datasets. Your validation should take an instance of your models as an
-argument and return a dictionary containing the results. Here we register two Cross-Validation
-validations with different numbers of folds:
+**Register your validations:**
+
+You can register multiple validations if you want to compare models in different scenarios, e.g. on
+different datasets. Your validations should take an instance of your models as an argument then
+return a dictionary containing the results. Here we register two Cross-Validation validations with
+different numbers of folds.
 
 ```python
 validation_registry = kotsu.registration.ValidationRegistry()
@@ -90,8 +93,9 @@ validation_registry.register(
 )
 ```
 
-Run the models through the validations, choosing the current directory as location for the output
-of the results:
+**Run the models through the validations:**
+
+We choose the current directory as the location for writing the results.
 
 ```python
 kotsu.run(model_registry, validation_registry, "./")
