@@ -13,7 +13,7 @@ bloat or overhead**. Its flexibility allows usage with **any model interface** a
 validation technique, no matter how complex. The structure it provides **avoids
 common pitfalls** that occur when attempting to make fair comparisons between models.
 
-## Main Feature
+## Main Features
 
   - Register a model with hyperparameters to a unique ID
   - Register validations to a unique ID
