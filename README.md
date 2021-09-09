@@ -42,13 +42,13 @@ hyper-parameters:
 model_registry = kotsu.registration.ModelRegistry()
 
 model_registry.register(
-    id="SCV-v1",
+    id="SVC-v1",
     entry_point=svm.SVC,
     kwargs={"kernel": "linear", "C": 1, "random_state": 1},
 )
 
 model_registry.register(
-    id="SCV-v2",
+    id="SVC-v2",
     entry_point=svm.SVC,
     kwargs={"kernel": "linear", "C": 0.5, "random_state": 1},
 )
