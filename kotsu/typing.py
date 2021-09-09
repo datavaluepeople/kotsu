@@ -18,4 +18,4 @@ Results = Dict[str, Union[float, str]]
 Model = Any
 
 # A Validation is a callable (e.g. function) that takes a Model, and returns a Results.
-Validation = Callable[[Any], Results]
+Validation = Callable[[Model], Results]
