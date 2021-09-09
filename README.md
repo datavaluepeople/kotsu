@@ -114,12 +114,12 @@ kotsu.run(model_registry, validation_registry, "./")
 Then find the results from each model-validation combination in a CSV written to the current
 directory.
 
-#### Documentation on interfaces
+### Documentation on interfaces
 
 See [kotsu.typing](https://github.com/datavaluepeople/kotsu/blob/main/kotsu/typing.py) for
 documentation on the main entities; Models, Validations, and Results, and their interfaces.
 
-#### Comprehensive example
+### Comprehensive example
 
 See the [end to end test](https://github.com/datavaluepeople/kotsu/blob/main/tests/test_end_to_end.py)
 for a more comprehensive example usage of kotsu, which includes storing the trained models from
