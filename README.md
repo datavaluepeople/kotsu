@@ -57,9 +57,9 @@ model_registry.register(
 **Register your validations:**
 
 You can register multiple validations if you want to compare models in different scenarios, e.g. on
-different datasets. Your validations should take an instance of your models as an argument then
-return a dictionary containing the results. Here we register two Cross-Validation validations with
-different numbers of folds.
+different datasets. Your validations should take an instance of your models as an argument, then
+return a dictionary containing the results from validation of that model. Here we register two
+Cross-Validation validations with different numbers of folds.
 
 ```python
 validation_registry = kotsu.registration.ValidationRegistry()
