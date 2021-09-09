@@ -29,10 +29,9 @@ common pitfalls** that occur when attempting to make fair comparisons between mo
 Import your packages for modelling and kotsu:
 
 ```python
+import kotsu
 from sklearn import datasets, svm
 from sklearn.model_selection import cross_val_score
-
-import kotsu
 ```
 
 Register your competing models. Here we register two Support Vector Classifiers with different
