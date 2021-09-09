@@ -10,7 +10,7 @@ REPO_ROOT = pathlib.Path(__file__).parent
 with open(REPO_ROOT / "README.md", encoding="utf-8") as f:
     README = f.read()
 
-REQUIREMENTS = []
+REQUIREMENTS = ["pandas"]
 
 setup(
     name="kotsu",
