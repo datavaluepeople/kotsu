@@ -33,8 +33,8 @@ def run(
     for validation_spec in validation_registry.all():
         for model_spec in model_registry.all():
             logger.info(f"Running validation - model: {validation_spec.id} - {model_spec.id}")
-            validation: Validation = validation_spec.make()
-            model: Model = model_spec.make()
+            validation = validation_spec.make()
+            model = model_spec.make()
             results, elapsed_secs = _run_validation_model(validation, model, run_params)
             results.update(
                 {
