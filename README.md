@@ -20,7 +20,7 @@ common pitfalls** that occur when attempting to make fair comparisons between mo
   - Run all registered models through all registered validations, and have the results compiled and
     stored into a dataframe
   - Optionally passes an `artefacts_directory` to your validations, for storing of outputs for
-    further analysis, e.g. trained models, model predictions on test data sets
+    further analysis, e.g. trained models or model predictions on test data sets
   - Doesn't enforce any constraints or requirements on your models' interfaces
   - Pure Python package, with no other setup or configuration of other systems required
 
