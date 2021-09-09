@@ -2,6 +2,7 @@
 from typing import Tuple
 from kotsu.typing import Model, Results, Validation
 
+import functools
 import logging
 import time
 
@@ -16,6 +17,7 @@ def run(
     model_registry: ModelRegistry,
     validation_registry: ValidationRegistry,
     store_directory: str,
+    pass_artefacts_directory: bool = False,
     run_params: dict = {},
 ):
     """Run a registry of models on a registry of validations.
@@ -27,14 +29,22 @@ def run(
             each model through.
         store_directory: A file path or URI location to store the validation results and any extra
             output artefacts of the validations and models.
+        pass_artefacts_directory: Flag, if True then Validations will be passed an
+            `artefacts_directory: str` kwarg along with Model arg.
         run_params: A dictionary of optional run parameters.
     """
     results_list = []
     for validation_spec in validation_registry.all():
         for model_spec in model_registry.all():
             logger.info(f"Running validation - model: {validation_spec.id} - {model_spec.id}")
+
             validation = validation_spec.make()
+            if pass_artefacts_directory is True:
+                artefacts_directory = store_directory + f"{validation_spec.id}/{model_spec.id}/"
+                validation = functools.partial(validation, artefacts_directory=artefacts_directory)
+
             model = model_spec.make()
+
             results, elapsed_secs = _run_validation_model(validation, model, run_params)
             results.update(
                 {
