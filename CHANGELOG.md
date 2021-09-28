@@ -6,6 +6,9 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
+### Added
+- Implement skipping validation-model combinations if already have results for that pair.
+
 ### Changed
 - BREAKING: Decouple results store and artefacts store in `run` interface. Changes `run` arguments.
 
