@@ -32,13 +32,12 @@ def test_form_results(mocker):
     )
     patched_store_write = mocker.patch("kotsu.store.write")
 
-    store_directory = "test_dir/"
     models = ["model_1", "model_2"]
     model_registry = FakeRegistry(models)
     validations = ["validation_1"]
     validation_registry = FakeRegistry(validations)
 
-    kotsu.run.run(model_registry, validation_registry, store_directory)
+    kotsu.run.run(model_registry, validation_registry)
 
     results = [
         {
@@ -56,14 +55,15 @@ def test_form_results(mocker):
     ]
 
     assert patched_run_validation_model.call_count == 2
-    patched_store_write.assert_called_with(results, store_directory, to_front_cols=mock.ANY)
+    patched_store_write.assert_called_with(
+        results, "./validation_results.csv", to_front_cols=mock.ANY
+    )
 
 
-@pytest.mark.parametrize("pass_artefacts_directory", [True, False])
-def test_validation_calls(pass_artefacts_directory, mocker):
+@pytest.mark.parametrize("artefacts_store_directory", [None, "test_dir/"])
+def test_validation_calls(artefacts_store_directory, mocker):
     _ = mocker.patch("kotsu.store.write")
 
-    store_directory = "test_dir/"
     models = ["model_1", "model_2"]
     model_registry = FakeRegistry(models)
     validations = ["validation_1"]
@@ -72,19 +72,18 @@ def test_validation_calls(pass_artefacts_directory, mocker):
     kotsu.run.run(
         model_registry,
         validation_registry,
-        store_directory,
-        pass_artefacts_directory=pass_artefacts_directory,
+        artefacts_store_directory=artefacts_store_directory,
     )
-    if pass_artefacts_directory is True:
+    if artefacts_store_directory is not None:
         validation_registry.instances[0].assert_has_calls(
             [
                 mock.call(
                     model_registry.instances[0],
-                    artefacts_directory=f"{store_directory}validation_1/model_1/",
+                    artefacts_directory=f"{artefacts_store_directory}validation_1/model_1/",
                 ),
                 mock.call(
                     model_registry.instances[1],
-                    artefacts_directory=f"{store_directory}validation_1/model_2/",
+                    artefacts_directory=f"{artefacts_store_directory}validation_1/model_2/",
                 ),
             ]
         )

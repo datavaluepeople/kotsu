@@ -1,5 +1,5 @@
 """Interface for running a registry of models on a registry of validations."""
-from typing import Tuple
+from typing import Optional, Tuple
 from kotsu.typing import Model, Results, Validation
 
 import functools
@@ -16,8 +16,8 @@ logger = logging.getLogger(__name__)
 def run(
     model_registry: ModelRegistry,
     validation_registry: ValidationRegistry,
-    store_directory: str,
-    pass_artefacts_directory: bool = False,
+    results_path: str = "./validation_results.csv",
+    artefacts_store_directory: Optional[str] = None,
     run_params: dict = {},
 ):
     """Run a registry of models on a registry of validations.
@@ -27,10 +27,10 @@ def run(
             validations.
         validation_registry: A ValidationRegistry containing the registry of validations to run
             each model through.
-        store_directory: A file path or URI location to store the validation results and any extra
-            output artefacts of the validations and models.
-        pass_artefacts_directory: Flag, if True then Validations will be passed an
-            `artefacts_directory: str` kwarg along with Model arg.
+        results_path: The file path to which the results will be written to, and results from prior
+            runs will be read from.
+        artefacts_store_directory: A directory path or URI location to store extra output
+            artefacts of the validations and models.
         run_params: A dictionary of optional run parameters.
     """
     results_list = []
@@ -39,8 +39,10 @@ def run(
             logger.info(f"Running validation - model: {validation_spec.id} - {model_spec.id}")
 
             validation = validation_spec.make()
-            if pass_artefacts_directory is True:
-                artefacts_directory = store_directory + f"{validation_spec.id}/{model_spec.id}/"
+            if artefacts_store_directory is not None:
+                artefacts_directory = (
+                    artefacts_store_directory + f"{validation_spec.id}/{model_spec.id}/"
+                )
                 validation = functools.partial(validation, artefacts_directory=artefacts_directory)
 
             model = model_spec.make()
@@ -55,7 +57,7 @@ def run(
             )
             results_list.append(results)
     store.write(
-        results_list, store_directory, to_front_cols=["validation_id", "model_id", "runtime_secs"]
+        results_list, results_path, to_front_cols=["validation_id", "model_id", "runtime_secs"]
     )
 
 
