@@ -9,7 +9,7 @@ import time
 import pandas as pd
 
 from kotsu import store
-from kotsu.registration import ModelRegistry, ValidationRegistry
+from kotsu.registration import ModelRegistry, ModelSpec, ValidationRegistry, ValidationSpec
 
 
 logger = logging.getLogger(__name__)
@@ -71,19 +71,35 @@ def run(
 
             model = model_spec.make()
             results, elapsed_secs = _run_validation_model(validation, model, run_params)
-            results.update(
-                {
-                    "validation_id": validation_spec.id,
-                    "model_id": model_spec.id,
-                    "runtime_secs": elapsed_secs,
-                }
-            )
+            results = _add_meta_data_to_results(results, elapsed_secs, validation_spec, model_spec)
             results_df = results_df.append(results, ignore_index=True)
 
     results_df = results_df.reset_index(drop=True)
     store.write(
         results_df, results_path, to_front_cols=["validation_id", "model_id", "runtime_secs"]
     )
+
+
+def _add_meta_data_to_results(
+    results: Results,
+    elapsed_secs: float,
+    validation_spec: ValidationSpec,
+    model_spec: ModelSpec,
+) -> Results:
+    """Add meta data to results, raising if keys clash."""
+    results_meta_data: Results = {
+        "validation_id": validation_spec.id,
+        "model_id": model_spec.id,
+        "runtime_secs": elapsed_secs,
+    }
+    if bool(set(results) & set(results_meta_data)):
+        raise ValueError(
+            (
+                f"Validation:{validation_spec.id} on model:{model_spec.id} "
+                f"returned results:{results} which contains a privileged key name."
+            )
+        )
+    return {**results, **results_meta_data}
 
 
 def _run_validation_model(

@@ -190,3 +190,28 @@ def test_skip_if_prior_result(skip_if_prior_result, mocker, tmpdir):
         )
         assert patched_run_validation_model.call_count == 3
         pd.testing.assert_frame_equal(out_df, results_df)
+
+
+@pytest.mark.parametrize(
+    "result",
+    [
+        ({"validation_id": "_", "test_result": "result"}, 10),
+        ({"model_id": "_", "test_result": "result_2"}, 20),
+        ({"runtime_secs": "_", "test_result": "result_3"}, 30),
+    ],
+)
+def test_raise_if_valiation_returns_privilidged_key_name(result, mocker, tmpdir):
+    _ = mocker.patch("kotsu.run._run_validation_model", side_effect=[result])
+    models = ["model_1"]
+    model_registry = FakeRegistry(models)
+    validations = ["validation_1"]
+    validation_registry = FakeRegistry(validations)
+
+    results_path = str(tmpdir) + "validation_results.csv"
+
+    with pytest.raises(ValueError):
+        kotsu.run.run(
+            model_registry,
+            validation_registry,
+            results_path=results_path,
+        )

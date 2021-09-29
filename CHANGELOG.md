@@ -8,6 +8,8 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ### Added
 - Implement skipping validation-model combinations if already have results for that pair.
+- Run time check that validation-model combinations don't return results that contain a privileged
+  key name.
 
 ### Changed
 - BREAKING: Decouple results store and artefacts store in `run` interface. Changes `run` arguments.
