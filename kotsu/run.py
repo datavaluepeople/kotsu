@@ -49,6 +49,7 @@ def run(
             pass  # leave `results_df` as the empty dataframe already defined
 
     results_df = results_df.set_index(["validation_id", "model_id"], drop=False)
+    results_list = []
 
     for validation_spec in validation_registry.all():
         for model_spec in model_registry.all():
@@ -72,8 +73,10 @@ def run(
             model = model_spec.make()
             results, elapsed_secs = _run_validation_model(validation, model, run_params)
             results = _add_meta_data_to_results(results, elapsed_secs, validation_spec, model_spec)
-            results_df = results_df.append(results, ignore_index=True)
+            results_list.append(results)
 
+    additional_results_df = pd.DataFrame.from_records(results_list)
+    results_df = results_df.append(additional_results_df, ignore_index=True)
     results_df = results_df.reset_index(drop=True)
     store.write(
         results_df, results_path, to_front_cols=["validation_id", "model_id", "runtime_secs"]
