@@ -65,8 +65,10 @@ validation_registry.register(
 
 
 def test_run(tmpdir):
-    run.run(model_registry, validation_registry, str(tmpdir) + "/")
+    run.run(model_registry, validation_registry, str(tmpdir) + "/validation_results.csv")
 
 
 def test_run_save_models(tmpdir):
-    run.run(model_registry, validation_registry, str(tmpdir) + "/", pass_artefacts_directory=True)
+    run.run(
+        model_registry, validation_registry, str(tmpdir) + "/validation_results.csv", str(tmpdir)
+    )
