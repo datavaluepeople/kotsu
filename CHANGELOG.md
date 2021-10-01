@@ -6,6 +6,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
+## [v0.2.0] - 2021-10-01
 ### Added
 - Implement skipping validation-model combinations if already have results for that pair.
 - Run time check that validation-model combinations don't return results that contain a privileged
@@ -27,6 +28,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 ### Added
 - Stub module
 
-[Unreleased]: https://github.com/datavaluepeople/kotsu/compare/v0.1.0...HEAD
+[Unreleased]: https://github.com/datavaluepeople/kotsu/compare/v0.2.0...HEAD
+[v0.2.0]: https://github.com/datavaluepeople/kotsu/compare/v0.1.0...v0.2.0
 [v0.1.0]: https://github.com/datavaluepeople/kotsu/compare/v0.0.1-alpha.1...v0.1.0
 [v0.0.1-alpha.1]: https://github.com/datavaluepeople/kotsu/releases/tag/v0.0.1-alpha.1
