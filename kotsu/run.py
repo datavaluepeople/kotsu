@@ -114,6 +114,6 @@ def _run_validation_model(
         A tuple of (dict of results: Results type, elapsed time in seconds)
     """
     start_time = time.time()
-    results = validation(model)
+    results = validation(model, **run_params)
     elapsed_secs = time.time() - start_time
     return results, elapsed_secs
