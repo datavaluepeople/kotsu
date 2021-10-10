@@ -18,7 +18,7 @@ Results = Dict[str, Union[float, str]]
 Model = Any
 
 # A Validation is a callable (e.g. function) that takes a Model, and returns a Results.
-Validation = Callable[[Model, ...], Results]
+Validation = Callable[..., Results]
 
 # Validations can also take a Model _and_ an artefact directory, which is a string, which
 # Validations may use as the location to write any artefacts/data objects output by the Validation.
