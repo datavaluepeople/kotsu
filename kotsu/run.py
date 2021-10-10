@@ -4,6 +4,7 @@ from kotsu.typing import Model, Results, Validation
 
 import functools
 import logging
+import os
 import time
 
 import pandas as pd
@@ -65,9 +66,10 @@ def run(
             validation = validation_spec.make()
 
             if artefacts_store_directory is not None:
-                artefacts_directory = (
-                    artefacts_store_directory + f"{validation_spec.id}/{model_spec.id}/"
+                artefacts_directory = os.path.join(
+                    artefacts_store_directory, f"{validation_spec.id}/{model_spec.id}/"
                 )
+                os.makedirs(artefacts_directory, exist_ok=True)
                 validation = functools.partial(validation, artefacts_directory=artefacts_directory)
 
             model = model_spec.make()
