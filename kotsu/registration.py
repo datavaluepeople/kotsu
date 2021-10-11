@@ -115,7 +115,7 @@ class _Registry(Generic[Entity]):
 
     def all(self):
         """Return all the entitys in the registry."""
-        return self.entity_specs.values()
+        return list(self.entity_specs.values())
 
     def register(
         self,
