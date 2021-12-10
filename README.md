@@ -36,6 +36,9 @@ pip install kotsu
 
 ## Usage
 
+The following demonstrates a simple usage of kotsu to register and validate multiple models over
+multiple validations.
+
 **Import kotsu and your packages for modelling:**
 
 ```python
@@ -108,7 +111,7 @@ validation_registry.register(
 We choose the current directory as the location for writing the results.
 
 ```python
-kotsu.run(model_registry, validation_registry, "./")
+kotsu.run(model_registry, validation_registry)
 ```
 
 Then find the results from each model-validation combination in a CSV written to the current
