@@ -7,11 +7,10 @@ import pickle
 from sklearn import datasets, svm
 from sklearn.model_selection import cross_validate
 
-from kotsu import run
-from kotsu.registration import ModelRegistry, ValidationRegistry
+import kotsu
 
 
-model_registry = ModelRegistry()
+model_registry = kotsu.registration.ModelRegistry()
 
 model_registry.register(
     id="SVC-v1",
@@ -25,7 +24,7 @@ model_registry.register(
     kwargs={"kernel": "linear", "C": 0.5, "random_state": 1},
 )
 
-validation_registry = ValidationRegistry()
+validation_registry = kotsu.registration.ValidationRegistry()
 
 
 def factory_iris_cross_val(folds: int) -> Callable:
@@ -65,10 +64,10 @@ validation_registry.register(
 
 
 def test_run(tmpdir):
-    run.run(model_registry, validation_registry, str(tmpdir) + "/validation_results.csv")
+    kotsu.run.run(model_registry, validation_registry, str(tmpdir) + "/validation_results.csv")
 
 
 def test_run_save_models(tmpdir):
-    run.run(
+    kotsu.run.run(
         model_registry, validation_registry, str(tmpdir) + "/validation_results.csv", str(tmpdir)
     )
