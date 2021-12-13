@@ -1,5 +1,5 @@
 """Interface for running a registry of models on a registry of validations."""
-from typing import Optional, Tuple
+from typing import Optional, Tuple, Union
 from kotsu.typing import Model, Results, Validation
 
 import functools
@@ -67,17 +67,12 @@ def run(
             logger.info(f"Running validation - model: {validation_spec.id} - {model_spec.id}")
             validation = validation_spec.make()
 
-            if artefacts_store_dir is not None:
-                validation_artefacts_dir = os.path.join(
-                    artefacts_store_dir, f"{validation_spec.id}/"
-                )
-                model_artefacts_dir = os.path.join(validation_artefacts_dir, f"{model_spec.id}/")
-                os.makedirs(model_artefacts_dir, exist_ok=True)
-                validation = functools.partial(
-                    validation,
-                    validation_artefacts_dir=validation_artefacts_dir,
-                    model_artefacts_dir=model_artefacts_dir,
-                )
+            validation = _form_validation_partial_with_store_dirs(
+                validation,
+                artefacts_store_dir,
+                validation_spec,
+                model_spec,
+            )
 
             model = model_spec.make()
             results, elapsed_secs = _run_validation_model(validation, model, run_params)
@@ -90,6 +85,30 @@ def run(
     store.write(
         results_df, results_path, to_front_cols=["validation_id", "model_id", "runtime_secs"]
     )
+
+
+def _form_validation_partial_with_store_dirs(
+    validation: Validation,
+    artefacts_store_dir: Union[str, None],
+    validation_spec: ValidationSpec,
+    model_spec: ModelSpec,
+):
+    """Form a partial of the validation with formed validation and model artefacts dirs if needed.
+
+    Also makes any needed dirs for the artefacts dirs.
+    """
+    if artefacts_store_dir is not None:
+        validation_artefacts_dir = os.path.join(artefacts_store_dir, f"{validation_spec.id}/")
+        model_artefacts_dir = os.path.join(validation_artefacts_dir, f"{model_spec.id}/")
+        os.makedirs(model_artefacts_dir, exist_ok=True)
+        validation = functools.partial(
+            validation,
+            validation_artefacts_dir=validation_artefacts_dir,
+            model_artefacts_dir=model_artefacts_dir,
+        )
+    else:
+        pass
+    return validation
 
 
 def _add_meta_data_to_results(
