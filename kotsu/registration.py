@@ -49,8 +49,8 @@ class _Spec(Generic[Entity]):
             - the string path to the python object (e.g.module.name:factory_func, or
               module.name:Class)
             - the python object (class or factory) itself
-            Should be set to `None` to denote that the entity is now defunct, replaced by a newer
-            version.
+        deprecated: Flag to denote whether this entity should be skipped in validation runs and
+            considered deprecated and replaced by a more recent/better validation/model
         nondeterministic: Whether this entity is non-deterministic even after seeding
         kwargs: The kwargs to pass to the entity entry point when instantiating the entity
     """
@@ -58,12 +58,14 @@ class _Spec(Generic[Entity]):
     def __init__(
         self,
         id: str,
-        entry_point: Optional[Union[Callable, str]] = None,
+        entry_point: Union[Callable, str],
+        deprecated: bool = False,
         nondeterministic: bool = False,
         kwargs: Optional[dict] = None,
     ):
         self.id = id
         self.entry_point = entry_point
+        self.deprecated = deprecated
         self.nondeterministic = nondeterministic
         self._kwargs = {} if kwargs is None else kwargs
 
@@ -76,7 +78,7 @@ class _Spec(Generic[Entity]):
 
     def make(self, **kwargs) -> Entity:
         """Instantiates an instance of the entity."""
-        if self.entry_point is None:
+        if self.deprecated:
             raise ValueError(
                 f"Attempting to make deprecated entity {self.id}. "
                 "(HINT: is there a newer registered version of this entity?)"
@@ -120,7 +122,8 @@ class _Registry(Generic[Entity]):
     def register(
         self,
         id: str,
-        entry_point: Optional[Union[Callable, str]] = None,
+        entry_point: Union[Callable, str],
+        deprecated: bool = False,
         nondeterministic: bool = False,
         kwargs: Optional[dict] = None,
     ):
@@ -134,14 +137,20 @@ class _Registry(Generic[Entity]):
                 - the string path to the python object (e.g.module.name:factory_func, or
                   module.name:Class)
                 - the python object (class or factory) itself
-                Should be set to `None` to denote that the entity is now defunct, replaced by a
-                newer version.
+            deprecated: Flag to denote whether this entity should be skipped in validation runs and
+                considered deprecated and replaced by a more recent/better validation/model.
             nondeterministic: Whether this entity is non-deterministic even after seeding
             kwargs: The kwargs to pass to the entity entry point when instantiating the entity
         """
         if id in self.entity_specs:
             raise ValueError(f"Cannot re-register ID {id}")
-        self.entity_specs[id] = _Spec(id, entry_point, nondeterministic, kwargs)
+        self.entity_specs[id] = _Spec(
+            id,
+            entry_point,
+            deprecated=deprecated,
+            nondeterministic=nondeterministic,
+            kwargs=kwargs,
+        )
 
 
 ModelSpec = _Spec[Model]

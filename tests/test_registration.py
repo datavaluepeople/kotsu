@@ -55,9 +55,9 @@ def test_registration(entry_point):
 def test_register_duplicate_id():
     registry = registration._Registry()
 
-    registry.register("Entity-v0")
+    registry.register("Entity-v0", "fake_entry_point")
     with pytest.raises(ValueError, match=r"Cannot re-register ID"):
-        registry.register("Entity-v0")
+        registry.register("Entity-v0", "fake_entry_point")
 
 
 def test_make_missing_entity():
@@ -70,7 +70,7 @@ def test_make_missing_entity():
 def test_make_deprecated_entity():
     registry = registration._Registry()
 
-    registry.register("Entity-v0", entry_point=None)
+    registry.register("Entity-v0", "fake_entry_point", deprecated=True)
     with pytest.raises(ValueError, match=r"Attempting to make deprecated entity"):
         registry.make("Entity-v0")
 
@@ -88,4 +88,4 @@ def test_malformed_entity_id(bad_id):
     registry = registration._Registry()
 
     with pytest.raises(ValueError, match=r"Attempted to register malformed entity ID"):
-        registry.register(bad_id)
+        registry.register(bad_id, "fake_entry_point")

@@ -6,6 +6,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 ### Changed
+- Replaced `entry_point=None` in entity spec with `deprecated=True`
 - Changed passing `artefacts_store_dir` to passing `validation_artefacts_dir` and
   `model_artefacts_dir` explicitly to validations (when `artefacts_store_dir` is not None for
   `run`).
