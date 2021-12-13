@@ -1,3 +1,5 @@
+import logging
+
 import pytest
 
 from kotsu import error, registration
@@ -52,12 +54,13 @@ def test_registration(entry_point):
     assert all_specs[1].id == "SomeEntity-v1"
 
 
-def test_register_duplicate_id():
+def test_register_duplicate_id(caplog):
     registry = registration._Registry()
 
     registry.register("Entity-v0", "fake_entry_point")
-    with pytest.raises(ValueError, match=r"Cannot re-register ID"):
+    with caplog.at_level(logging.WARNING):
         registry.register("Entity-v0", "fake_entry_point")
+    assert "Entity with ID [id=Entity-v0] already registered" in caplog.text
 
 
 def test_make_missing_entity():

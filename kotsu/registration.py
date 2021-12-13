@@ -145,7 +145,10 @@ class _Registry(Generic[Entity]):
             kwargs: The kwargs to pass to the entity entry point when instantiating the entity
         """
         if id in self.entity_specs:
-            raise ValueError(f"Cannot re-register ID {id}")
+            logger.warning(
+                f"Entity with ID [id={id}] already registered, but the ID is now being used "
+                "to register another entity, OVERWRITING previous registered entity."
+            )
         self.entity_specs[id] = _Spec(
             id,
             entry_point,
