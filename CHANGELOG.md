@@ -6,6 +6,9 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 ### Changed
+- Changed passing `artefacts_store_dir` to passing `validation_artefacts_dir` and
+  `model_artefacts_dir` explicitly to validations (when `artefacts_store_dir` is not None for
+  `run`).
 - Changed `..._directory` to `..._dir` in var names for brevity
 - Changed implicit kwarg for validations from `artefacts_directory` to `artefacts_store_directory`
   to match `run` kwarg name

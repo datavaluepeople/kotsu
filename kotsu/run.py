@@ -38,9 +38,8 @@ def run(
             will be ran and any prior results in results_path will be completely overwritten.
         artefacts_store_dir: A directory path or URI location to store extra output artefacts
             of the validations and models.
-            If not None, then validations will be passed, via the same kwarg name
-            `artefacts_store_dir`, this arg value but with validation ID and model ID
-            directories appended for the current combination being ran.
+            If not None, then validations will be passed two kwargs; `validation_artefacts_dir` and
+            `model_artefacts_dir`.
         run_params: A dictionary of optional run parameters.
     """
     results_df = pd.DataFrame(columns=["validation_id", "model_id", "runtime_secs"])
@@ -69,12 +68,15 @@ def run(
             validation = validation_spec.make()
 
             if artefacts_store_dir is not None:
-                current_artefacts_store_dir = os.path.join(
-                    artefacts_store_dir, f"{validation_spec.id}/{model_spec.id}/"
+                validation_artefacts_dir = os.path.join(
+                    artefacts_store_dir, f"{validation_spec.id}/"
                 )
-                os.makedirs(current_artefacts_store_dir, exist_ok=True)
+                model_artefacts_dir = os.path.join(validation_artefacts_dir, f"{model_spec.id}/")
+                os.makedirs(model_artefacts_dir, exist_ok=True)
                 validation = functools.partial(
-                    validation, artefacts_store_dir=current_artefacts_store_dir
+                    validation,
+                    validation_artefacts_dir=validation_artefacts_dir,
+                    model_artefacts_dir=model_artefacts_dir,
                 )
 
             model = model_spec.make()

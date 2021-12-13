@@ -89,11 +89,13 @@ def test_validation_calls(artefacts_store_dir, mocker):
             [
                 mock.call(
                     model_registry.instances[0],
-                    artefacts_store_dir=f"{artefacts_store_dir}validation_1/model_1/",
+                    validation_artefacts_dir=f"{artefacts_store_dir}validation_1/",
+                    model_artefacts_dir=f"{artefacts_store_dir}validation_1/model_1/",
                 ),
                 mock.call(
                     model_registry.instances[1],
-                    artefacts_store_dir=f"{artefacts_store_dir}validation_1/model_2/",
+                    validation_artefacts_dir=f"{artefacts_store_dir}validation_1/",
+                    model_artefacts_dir=f"{artefacts_store_dir}validation_1/model_2/",
                 ),
             ]
         )
