@@ -5,6 +5,10 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/),
 and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
 ## [Unreleased]
+### Changed
+- Changed implicit kwarg for validations from `artefacts_directory` to `artefacts_store_directory`
+  to match `run` kwarg name
+
 ### Fixed
 - Add run and registration to kotsu. imports
 - Docs Usage section updated with latest interface

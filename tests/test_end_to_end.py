@@ -1,7 +1,6 @@
 """An end to end example and test."""
 from typing import Callable
 
-import os
 import pickle
 
 from sklearn import datasets, svm
@@ -30,17 +29,16 @@ validation_registry = kotsu.registration.ValidationRegistry()
 def factory_iris_cross_val(folds: int) -> Callable:
     """Factory for iris cross validation."""
 
-    def iris_cross_val(model, artefacts_directory=None) -> dict:
+    def iris_cross_val(model, artefacts_store_directory=None) -> dict:
         """Iris classification cross validation."""
         X, y = datasets.load_iris(return_X_y=True)
         scores = cross_validate(model, X, y, cv=folds, return_estimator=True)
 
-        if artefacts_directory:
-            os.makedirs(artefacts_directory)
+        if artefacts_store_directory:
             # Save the trained models from each fold
             for fold_idx, model in enumerate(scores["estimator"]):
-                with open(artefacts_directory + f"model_from_fold_{fold_idx}.pk", "wb") as handle:
-                    pickle.dump(model, handle)
+                with open(artefacts_store_directory + f"model_from_fold_{fold_idx}.pk", "wb") as f:
+                    pickle.dump(model, f)
 
         results = {f"fold_{i}_score": score for i, score in enumerate(scores["test_score"])}
         results["mean_score"] = scores["test_score"].mean()
@@ -64,10 +62,15 @@ validation_registry.register(
 
 
 def test_run(tmpdir):
-    kotsu.run.run(model_registry, validation_registry, str(tmpdir) + "/validation_results.csv")
+    kotsu.run.run(
+        model_registry, validation_registry, results_path=str(tmpdir) + "/validation_results.csv"
+    )
 
 
 def test_run_save_models(tmpdir):
     kotsu.run.run(
-        model_registry, validation_registry, str(tmpdir) + "/validation_results.csv", str(tmpdir)
+        model_registry,
+        validation_registry,
+        results_path=str(tmpdir) + "/validation_results.csv",
+        artefacts_store_directory=str(tmpdir),
     )

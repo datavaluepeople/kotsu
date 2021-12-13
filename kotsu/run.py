@@ -36,8 +36,11 @@ def run(
         skip_if_prior_result: Flag, if True then will not run validation-model combinations
             that are found in the results at given results_path. If False then all combinations
             will be ran and any prior results in results_path will be completely overwritten.
-        artefacts_store_directory: A directory path or URI location to store extra output
-            artefacts of the validations and models.
+        artefacts_store_directory: A directory path or URI location to store extra output artefacts
+            of the validations and models.
+            If not None, then validations will be passed, via the same kwarg name
+            `artefacts_store_directory`, this arg value but with validation ID and model ID
+            directories appended for the current combination being ran.
         run_params: A dictionary of optional run parameters.
     """
     results_df = pd.DataFrame(columns=["validation_id", "model_id", "runtime_secs"])
@@ -66,11 +69,13 @@ def run(
             validation = validation_spec.make()
 
             if artefacts_store_directory is not None:
-                artefacts_directory = os.path.join(
+                current_artefacts_store_directory = os.path.join(
                     artefacts_store_directory, f"{validation_spec.id}/{model_spec.id}/"
                 )
-                os.makedirs(artefacts_directory, exist_ok=True)
-                validation = functools.partial(validation, artefacts_directory=artefacts_directory)
+                os.makedirs(current_artefacts_store_directory, exist_ok=True)
+                validation = functools.partial(
+                    validation, artefacts_store_directory=current_artefacts_store_directory
+                )
 
             model = model_spec.make()
             results, elapsed_secs = _run_validation_model(validation, model, run_params)
