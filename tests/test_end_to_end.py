@@ -29,15 +29,15 @@ validation_registry = kotsu.registration.ValidationRegistry()
 def factory_iris_cross_val(folds: int) -> Callable:
     """Factory for iris cross validation."""
 
-    def iris_cross_val(model, artefacts_store_directory=None) -> dict:
+    def iris_cross_val(model, artefacts_store_dir=None) -> dict:
         """Iris classification cross validation."""
         X, y = datasets.load_iris(return_X_y=True)
         scores = cross_validate(model, X, y, cv=folds, return_estimator=True)
 
-        if artefacts_store_directory:
+        if artefacts_store_dir:
             # Save the trained models from each fold
             for fold_idx, model in enumerate(scores["estimator"]):
-                with open(artefacts_store_directory + f"model_from_fold_{fold_idx}.pk", "wb") as f:
+                with open(artefacts_store_dir + f"model_from_fold_{fold_idx}.pk", "wb") as f:
                     pickle.dump(model, f)
 
         results = {f"fold_{i}_score": score for i, score in enumerate(scores["test_score"])}
@@ -72,5 +72,5 @@ def test_run_save_models(tmpdir):
         model_registry,
         validation_registry,
         results_path=str(tmpdir) + "/validation_results.csv",
-        artefacts_store_directory=str(tmpdir),
+        artefacts_store_dir=str(tmpdir),
     )

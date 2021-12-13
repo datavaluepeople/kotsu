@@ -21,7 +21,7 @@ def run(
     validation_registry: ValidationRegistry,
     results_path: str = "./validation_results.csv",
     skip_if_prior_result: bool = True,
-    artefacts_store_directory: Optional[str] = None,
+    artefacts_store_dir: Optional[str] = None,
     run_params: dict = {},
 ):
     """Run a registry of models on a registry of validations.
@@ -36,10 +36,10 @@ def run(
         skip_if_prior_result: Flag, if True then will not run validation-model combinations
             that are found in the results at given results_path. If False then all combinations
             will be ran and any prior results in results_path will be completely overwritten.
-        artefacts_store_directory: A directory path or URI location to store extra output artefacts
+        artefacts_store_dir: A directory path or URI location to store extra output artefacts
             of the validations and models.
             If not None, then validations will be passed, via the same kwarg name
-            `artefacts_store_directory`, this arg value but with validation ID and model ID
+            `artefacts_store_dir`, this arg value but with validation ID and model ID
             directories appended for the current combination being ran.
         run_params: A dictionary of optional run parameters.
     """
@@ -68,13 +68,13 @@ def run(
             logger.info(f"Running validation - model: {validation_spec.id} - {model_spec.id}")
             validation = validation_spec.make()
 
-            if artefacts_store_directory is not None:
-                current_artefacts_store_directory = os.path.join(
-                    artefacts_store_directory, f"{validation_spec.id}/{model_spec.id}/"
+            if artefacts_store_dir is not None:
+                current_artefacts_store_dir = os.path.join(
+                    artefacts_store_dir, f"{validation_spec.id}/{model_spec.id}/"
                 )
-                os.makedirs(current_artefacts_store_directory, exist_ok=True)
+                os.makedirs(current_artefacts_store_dir, exist_ok=True)
                 validation = functools.partial(
-                    validation, artefacts_store_directory=current_artefacts_store_directory
+                    validation, artefacts_store_dir=current_artefacts_store_dir
                 )
 
             model = model_spec.make()

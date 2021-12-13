@@ -70,8 +70,8 @@ def test_form_results(mocker, tmpdir):
     assert patched_store_write.call_args[0][1] == results_path
 
 
-@pytest.mark.parametrize("artefacts_store_directory", [None, "test_dir/"])
-def test_validation_calls(artefacts_store_directory, mocker):
+@pytest.mark.parametrize("artefacts_store_dir", [None, "test_dir/"])
+def test_validation_calls(artefacts_store_dir, mocker):
     _ = mocker.patch("kotsu.store.write")
 
     models = ["model_1", "model_2"]
@@ -82,18 +82,18 @@ def test_validation_calls(artefacts_store_directory, mocker):
     kotsu.run.run(
         model_registry,
         validation_registry,
-        artefacts_store_directory=artefacts_store_directory,
+        artefacts_store_dir=artefacts_store_dir,
     )
-    if artefacts_store_directory is not None:
+    if artefacts_store_dir is not None:
         validation_registry.instances[0].assert_has_calls(
             [
                 mock.call(
                     model_registry.instances[0],
-                    artefacts_store_directory=f"{artefacts_store_directory}validation_1/model_1/",
+                    artefacts_store_dir=f"{artefacts_store_dir}validation_1/model_1/",
                 ),
                 mock.call(
                     model_registry.instances[1],
-                    artefacts_store_directory=f"{artefacts_store_directory}validation_1/model_2/",
+                    artefacts_store_dir=f"{artefacts_store_dir}validation_1/model_2/",
                 ),
             ]
         )

@@ -6,6 +6,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 ### Changed
+- Changed `..._directory` to `..._dir` in var names for brevity
 - Changed implicit kwarg for validations from `artefacts_directory` to `artefacts_store_directory`
   to match `run` kwarg name
 

@@ -19,7 +19,7 @@ common pitfalls** that occur when attempting to make fair comparisons between mo
   - Register validations to a unique ID
   - Run all registered models through all registered validations, and have the results compiled and
     stored as a CSV
-  - Optionally passes an `artefacts_store_directory` to your validations, for storing of outputs
+  - Optionally passes an `artefacts_store_dir` to your validations, for storing of outputs
     for further analysis, e.g. trained models or model predictions on test data sets
   - Doesn't enforce any constraints or requirements on your models' interfaces
   - Pure Python package, with no other setup or configuration of other systems required
