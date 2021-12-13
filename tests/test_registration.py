@@ -1,6 +1,7 @@
 import pytest
 
 from kotsu import registration
+from kotsu import error
 
 
 def fake_entity_factory(param_1, param_2):
@@ -71,7 +72,7 @@ def test_make_deprecated_entity():
     registry = registration._Registry()
 
     registry.register("Entity-v0", "fake_entry_point", deprecated=True)
-    with pytest.raises(ValueError, match=r"Attempting to make deprecated entity"):
+    with pytest.raises(error.DeprecatedEntityError, match=r"Attempting to make deprecated entity"):
         registry.make("Entity-v0")
 
 

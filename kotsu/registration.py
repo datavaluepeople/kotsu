@@ -12,6 +12,8 @@ import importlib
 import logging
 import re
 
+from kotsu import error
+
 
 logger = logging.getLogger(__name__)
 
@@ -79,7 +81,7 @@ class _Spec(Generic[Entity]):
     def make(self, **kwargs) -> Entity:
         """Instantiates an instance of the entity."""
         if self.deprecated:
-            raise ValueError(
+            raise error.DeprecatedEntityError(
                 f"Attempting to make deprecated entity {self.id}. "
                 "(HINT: is there a newer registered version of this entity?)"
             )
