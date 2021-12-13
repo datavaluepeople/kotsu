@@ -55,7 +55,13 @@ def run(
     results_list = []
 
     for validation_spec in validation_registry.all():
+        if validation_spec.deprecated:
+            logger.info(f"Skipping validation: {validation_spec.id} - as is deprecated.")
+            continue
         for model_spec in model_registry.all():
+            if model_spec.deprecated:
+                logger.info(f"Skipping model: {model_spec.id} - as is deprecated.")
+                continue
 
             if skip_if_prior_result and (validation_spec.id, model_spec.id) in results_df.index:
                 logger.info(
@@ -65,8 +71,8 @@ def run(
                 continue
 
             logger.info(f"Running validation - model: {validation_spec.id} - {model_spec.id}")
-            validation = validation_spec.make()
 
+            validation = validation_spec.make()
             validation = _form_validation_partial_with_store_dirs(
                 validation,
                 artefacts_store_dir,

@@ -1,7 +1,6 @@
 import pytest
 
-from kotsu import registration
-from kotsu import error
+from kotsu import error, registration
 
 
 def fake_entity_factory(param_1, param_2):

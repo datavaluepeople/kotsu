@@ -18,6 +18,7 @@ class FakeRegistry:
         for id_ in ids:
             entity = mock.Mock()
             entity.id = id_
+            entity.deprecated = False
             entitys.append(entity)
             instance = mock.Mock()
             instance.return_value = {}
@@ -74,10 +75,12 @@ def test_form_results(mocker, tmpdir):
 def test_validation_calls(artefacts_store_dir, mocker):
     _ = mocker.patch("kotsu.store.write")
 
-    models = ["model_1", "model_2"]
+    models = ["model_1", "model_2", "model_3"]
     model_registry = FakeRegistry(models)
-    validations = ["validation_1"]
+    model_registry.entitys[1].deprecated = True
+    validations = ["validation_1", "validation_2"]
     validation_registry = FakeRegistry(validations)
+    validation_registry.entitys[1].deprecated = True
 
     kotsu.run.run(
         model_registry,
@@ -93,9 +96,9 @@ def test_validation_calls(artefacts_store_dir, mocker):
                     model_artefacts_dir=f"{artefacts_store_dir}validation_1/model_1/",
                 ),
                 mock.call(
-                    model_registry.instances[1],
+                    model_registry.instances[2],
                     validation_artefacts_dir=f"{artefacts_store_dir}validation_1/",
-                    model_artefacts_dir=f"{artefacts_store_dir}validation_1/model_2/",
+                    model_artefacts_dir=f"{artefacts_store_dir}validation_1/model_3/",
                 ),
             ]
         )
@@ -106,10 +109,11 @@ def test_validation_calls(artefacts_store_dir, mocker):
                     model_registry.instances[0],
                 ),
                 mock.call(
-                    model_registry.instances[1],
+                    model_registry.instances[2],
                 ),
             ]
         )
+    validation_registry.instances[1].assert_not_called()
 
 
 @pytest.mark.parametrize("skip_if_prior_result", [True, False])
