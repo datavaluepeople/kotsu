@@ -24,7 +24,7 @@ def run(
     artefacts_store_dir: Optional[str] = None,
     run_params: dict = {},
 ):
-    """Run a registry of models on a registry of validations.
+    """Run a registry of models through a registry of validations.
 
     Args:
         model_registry: A ModelRegistry containing the registry of models to be run through
