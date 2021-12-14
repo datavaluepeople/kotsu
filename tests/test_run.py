@@ -116,18 +116,19 @@ def test_validation_calls(artefacts_store_dir, mocker):
     validation_registry.instances[1].assert_not_called()
 
 
-@pytest.mark.parametrize("skip_if_prior_result", [True, False])
-def test_skip_if_prior_result(skip_if_prior_result, mocker, tmpdir):
+@pytest.mark.parametrize("force_rerun", [None, ["model_1"], "all"])
+def test_force_rerun(force_rerun, mocker, tmpdir):
     patched_run_validation_model = mocker.patch(
         "kotsu.run._run_validation_model",
         side_effect=[
-            ({"test_result": "result"}, 10),
+            ({"test_result": "result_1"}, 10),
             ({"test_result": "result_2"}, 20),
             ({"test_result": "result_3"}, 30),
+            ({"test_result": "result_4"}, 40),
         ],
     )
 
-    models = ["model_1"]
+    models = ["model_1", "model_2"]
     model_registry = FakeRegistry(models)
     validations = ["validation_1"]
     validation_registry = FakeRegistry(validations)
@@ -137,8 +138,9 @@ def test_skip_if_prior_result(skip_if_prior_result, mocker, tmpdir):
         model_registry,
         validation_registry,
         results_path=results_path,
-        skip_if_prior_result=skip_if_prior_result,
+        force_rerun=force_rerun,
     )
+    out_df = pd.read_csv(results_path)
 
     results_df = pd.DataFrame(
         [
@@ -146,7 +148,7 @@ def test_skip_if_prior_result(skip_if_prior_result, mocker, tmpdir):
                 "validation_id": "validation_1",
                 "model_id": "model_1",
                 "runtime_secs": 10,
-                "test_result": "result",
+                "test_result": "result_1",
             },
             {
                 "validation_id": "validation_1",
@@ -157,44 +159,59 @@ def test_skip_if_prior_result(skip_if_prior_result, mocker, tmpdir):
         ]
     )
 
-    out_df = pd.read_csv(results_path)
-
-    assert patched_run_validation_model.call_count == 1
-    pd.testing.assert_frame_equal(out_df, results_df.iloc[:1])
-
-    models = ["model_1", "model_2"]
-    model_registry = FakeRegistry(models)
+    assert patched_run_validation_model.call_count == 2
+    pd.testing.assert_frame_equal(out_df, results_df)
 
     kotsu.run.run(
         model_registry,
         validation_registry,
         results_path=results_path,
-        skip_if_prior_result=skip_if_prior_result,
+        force_rerun=force_rerun,
     )
-
     out_df = pd.read_csv(results_path)
 
-    if skip_if_prior_result:
+    if force_rerun is None:
         assert patched_run_validation_model.call_count == 2
         pd.testing.assert_frame_equal(out_df, results_df)
-    elif not skip_if_prior_result:
+
+    if isinstance(force_rerun, list) and force_rerun[0] == "model_1":
         results_df = pd.DataFrame(
             [
                 {
                     "validation_id": "validation_1",
                     "model_id": "model_1",
-                    "runtime_secs": 20,
-                    "test_result": "result_2",
+                    "runtime_secs": 30,
+                    "test_result": "result_3",
                 },
                 {
                     "validation_id": "validation_1",
                     "model_id": "model_2",
-                    "runtime_secs": 30,
-                    "test_result": "result_3",
+                    "runtime_secs": 20,
+                    "test_result": "result_2",
                 },
             ]
         )
         assert patched_run_validation_model.call_count == 3
+        pd.testing.assert_frame_equal(out_df, results_df)
+
+    if force_rerun == "all":
+        results_df = pd.DataFrame(
+            [
+                {
+                    "validation_id": "validation_1",
+                    "model_id": "model_1",
+                    "runtime_secs": 30,
+                    "test_result": "result_3",
+                },
+                {
+                    "validation_id": "validation_1",
+                    "model_id": "model_2",
+                    "runtime_secs": 40,
+                    "test_result": "result_4",
+                },
+            ]
+        )
+        assert patched_run_validation_model.call_count == 4
         pd.testing.assert_frame_equal(out_df, results_df)
 
 
