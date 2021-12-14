@@ -23,7 +23,7 @@ def run(
     results_path: str = "./validation_results.csv",
     force_rerun: Optional[Union[Literal["all"], List[str]]] = None,
     artefacts_store_dir: Optional[str] = None,
-    run_params: dict = {},
+    run_params: Optional[dict] = None,
 ):
     """Run a registry of models through a registry of validations.
 
@@ -44,6 +44,9 @@ def run(
             `model_artefacts_dir`.
         run_params: A dictionary of optional run parameters.
     """
+    if run_params is None:
+        run_params = {}
+
     try:
         results_df = pd.read_csv(results_path)
     except FileNotFoundError:
@@ -144,7 +147,7 @@ def _add_meta_data_to_results(
 
 
 def _run_validation_model(
-    validation: Validation, model: Model, run_params: dict = {}
+    validation: Validation, model: Model, run_params: dict
 ) -> Tuple[Results, float]:
     """Run given validation on given model, and store the results.
 
