@@ -22,8 +22,9 @@ Entity = TypeVar("Entity")
 
 # A unique ID for an entity; a name followed by a version number.
 # Entity-name is group 1, version is group 2.
-# [username/](entity-name)-v(version)
-entity_id_re = re.compile(r"^(?:[\w:-]+\/)?([\w:.-]+)-v(\d+)$")
+# [username/](entity-name)-v(major).(minor)
+# See tests for examples of well formed IDs.
+entity_id_re = re.compile(r"^(?:[\w:-]+\/)?([\w:.\-{}=\[\]]+)-v([\d.]+)$")
 
 
 def _load(name: str):
@@ -74,7 +75,7 @@ class _Spec(Generic[Entity]):
         match = entity_id_re.search(id)
         if not match:
             raise ValueError(
-                f"Attempted to register malformed entity ID: {id}. "
+                f"Attempted to register malformed entity ID: [id={id}]. "
                 f"(Currently all IDs must be of the form {entity_id_re.pattern}.)"
             )
 

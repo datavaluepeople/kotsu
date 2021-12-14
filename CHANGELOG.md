@@ -10,6 +10,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 - Added kotsu exception DeprecatedEntityError, and use instead of ValueError for deprecated entity
 
 ### Changed
+- Changed entity ID regex to extend to more permissible and expressive IDs
 - Replaced kwarg `skip_if_prior_result` with `force_rerun` in `run`
 - Stop raising exception when registering entities with duplicate ID and log warning instead
 - Replaced `entry_point=None` in entity spec with `deprecated=True`

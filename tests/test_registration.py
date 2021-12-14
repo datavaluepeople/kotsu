@@ -79,6 +79,21 @@ def test_make_deprecated_entity():
 
 
 @pytest.mark.parametrize(
+    "good_id",
+    [
+        "user1/entity_name_1-v1",
+        "user1/entity_name_1_{param_1=10}_{param_2=relu}-v1",
+        "user1/entity_name_1-v12",
+        "user1/entity_name_1-v1.2.0",
+        "user1/entity:name.1_[param_1=10]_{param_2=relu}-v1",
+    ],
+)
+def test_well_formed_entity_id(good_id):
+    registry = registration._Registry()
+    registry.register(good_id, "fake_entry_point")
+
+
+@pytest.mark.parametrize(
     "bad_id",
     [
         "EntityMissingVersionName",
