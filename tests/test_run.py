@@ -116,6 +116,24 @@ def test_validation_calls(artefacts_store_dir, mocker):
     validation_registry.instances[1].assert_not_called()
 
 
+def test_passing_run_params_to_validation(mocker):
+    _ = mocker.patch("kotsu.store.write")
+
+    models = ["model_1"]
+    model_registry = FakeRegistry(models)
+    validations = ["validation_1"]
+    validation_registry = FakeRegistry(validations)
+
+    kotsu.run.run(
+        model_registry,
+        validation_registry,
+        run_params={"test_param": "test_param_value"},
+    )
+    validation_registry.instances[0].assert_has_calls(
+        [mock.call(model_registry.instances[0], test_param="test_param_value")]
+    )
+
+
 @pytest.mark.parametrize("force_rerun", [None, ["model_1"], "all"])
 def test_force_rerun(force_rerun, mocker, tmpdir):
     patched_run_validation_model = mocker.patch(
