@@ -16,6 +16,15 @@ from kotsu.registration import ModelRegistry, ModelSpec, ValidationRegistry, Val
 logger = logging.getLogger(__name__)
 
 
+def flora_mock_func():
+    """Mock function.
+
+    Args: no input
+    Returns: prints congratulatory message
+    """
+    print("hi datavaluepeople, Flora here, congrats on getting to the end of your run function!")
+
+
 def run(
     model_registry: ModelRegistry,
     validation_registry: ValidationRegistry,
@@ -83,6 +92,8 @@ def run(
     store.write(
         results_df, results_path, to_front_cols=["validation_id", "model_id", "runtime_secs"]
     )
+
+    flora_mock_func()
 
 
 def _add_meta_data_to_results(
