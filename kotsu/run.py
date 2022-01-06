@@ -34,7 +34,7 @@ def run(
             each model through.
         results_path: The file path to which the results will be written to, and results from prior
             runs will be read from.
-        force_rerun: Specify if "all" models should be re-ran and their previous results
+        force_rerun: Specify if "all" models should be rerun and their previous results
             overwritten. Or specify a list of model IDs for which to rerun. Or don't rerun any
             validation-model combinations that already have results if `force_rerun=None`
             (default).
