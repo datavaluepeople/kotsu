@@ -215,3 +215,25 @@ def test_raise_if_valiation_returns_privilidged_key_name(result, mocker, tmpdir)
             validation_registry,
             results_path=results_path,
         )
+
+
+def test_congrats_printed(mocker, tmpdir, capsys):
+    _ = mocker.patch(
+        "kotsu.run._run_validation_model",
+        side_effect=[({"test_result": "result"}, 10), ({"test_result": "result_2"}, 20)],
+    )
+    _ = mocker.patch("kotsu.store.write")
+
+    models = ["model_1", "model_2"]
+    model_registry = FakeRegistry(models)
+    validations = ["validation_1"]
+    validation_registry = FakeRegistry(validations)
+
+    results_path = str(tmpdir) + "validation_results.csv"
+
+    kotsu.run.run(model_registry, validation_registry, results_path=results_path)
+
+    captured = capsys.readouterr()
+    expect = "hi datavaluepeople, Flora here, congrats on getting to the end of your run function!"
+
+    assert expect in captured.out
