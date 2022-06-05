@@ -34,10 +34,12 @@ def run(
             each model through.
         results_path: The file path to which the results will be written to, and results from prior
             runs will be read from.
-        force_rerun: Specify if "all" models should be rerun and their previous results
-            overwritten. Or specify a list of model IDs for which to rerun. Or don't rerun any
-            validation-model combinations that already have results if `force_rerun=None`
-            (default).
+        force_rerun: Argument to force models to rerun on validations. Model-validation
+            combinations without results will always be ran, as well as models that are forced via
+            this argument, which will overwrite previous results.
+            - if `force_rerun` = None, don't force rerun any models (default)
+            - if `force_rerun` = "all", force rerun all models
+            - if `force_rerun` = list of string ids, force rerun only these specified models
         artefacts_store_dir: A directory path or URI location to store extra output artefacts
             of the validations and models.
             If not None, then validations will be passed two kwargs; `validation_artefacts_dir` and
