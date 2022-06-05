@@ -7,7 +7,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 ## [Unreleased]
 ### Added
 - Implemented skipping validation/model if it is deprecated
-- Added kotsu exception DeprecatedEntityError, and use instead of ValueError for deprecated entity
+- Added kotsu exception EntityIsDeprecated, and use instead of ValueError for deprecated entity
 
 ### Changed
 - Changed entity ID regex to extend to more permissible and expressive IDs

@@ -1,7 +1,7 @@
 """Exceptions and warnings."""
 
 
-class DeprecatedEntityError(ValueError):
+class EntityIsDeprecated(ValueError):
     """Raised when attempting to make an instance of a deprecated entity."""
 
     pass
