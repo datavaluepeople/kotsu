@@ -11,6 +11,7 @@ from kotsu.typing import Model, Validation
 import importlib
 import logging
 import re
+import warnings
 
 from kotsu import error
 
@@ -146,9 +147,10 @@ class _Registry(Generic[Entity]):
             kwargs: The kwargs to pass to the entity entry point when instantiating the entity
         """
         if id in self.entity_specs:
-            logger.warning(
+            warnings.warn(
                 f"Entity with ID [id={id}] already registered, but the ID is now being used "
-                "to register another entity, OVERWRITING previous registered entity."
+                "to register another entity, OVERWRITING previous registered entity.",
+                UserWarning,
             )
         self.entity_specs[id] = _Spec(
             id,
