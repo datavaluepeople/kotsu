@@ -5,6 +5,8 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/),
 and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
 ## [Unreleased]
+
+## [v0.3.0] - 2022-06-07
 ### Added
 - Implemented skipping validation/model if it is deprecated
 - Added kotsu exception EntityIsDeprecated, and use instead of ValueError for deprecated entity
@@ -55,7 +57,8 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 ### Added
 - Stub module
 
-[Unreleased]: https://github.com/datavaluepeople/kotsu/compare/v0.2.1...HEAD
+[Unreleased]: https://github.com/datavaluepeople/kotsu/compare/v0.3.0...HEAD
+[v0.3.0]: https://github.com/datavaluepeople/kotsu/compare/v0.2.1...v0.3.0
 [v0.2.1]: https://github.com/datavaluepeople/kotsu/compare/v0.2.0...v0.2.1
 [v0.2.0]: https://github.com/datavaluepeople/kotsu/compare/v0.1.0...v0.2.0
 [v0.1.0]: https://github.com/datavaluepeople/kotsu/compare/v0.0.1-alpha.1...v0.1.0
