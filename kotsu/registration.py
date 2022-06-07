@@ -11,6 +11,9 @@ from kotsu.typing import Model, Validation
 import importlib
 import logging
 import re
+import warnings
+
+from kotsu import error
 
 
 logger = logging.getLogger(__name__)
@@ -20,8 +23,9 @@ Entity = TypeVar("Entity")
 
 # A unique ID for an entity; a name followed by a version number.
 # Entity-name is group 1, version is group 2.
-# [username/](entity-name)-v(version)
-entity_id_re = re.compile(r"^(?:[\w:-]+\/)?([\w:.-]+)-v(\d+)$")
+# [username/](entity-name)-v(major).(minor)
+# See tests for examples of well formed IDs.
+entity_id_re = re.compile(r"^(?:[\w:-]+\/)?([\w:.\-{}=\[\]]+)-v([\d.]+)$")
 
 
 def _load(name: str):
@@ -49,8 +53,8 @@ class _Spec(Generic[Entity]):
             - the string path to the python object (e.g.module.name:factory_func, or
               module.name:Class)
             - the python object (class or factory) itself
-            Should be set to `None` to denote that the entity is now defunct, replaced by a newer
-            version.
+        deprecated: Flag to denote whether this entity should be skipped in validation runs and
+            considered deprecated and replaced by a more recent/better validation/model
         nondeterministic: Whether this entity is non-deterministic even after seeding
         kwargs: The kwargs to pass to the entity entry point when instantiating the entity
     """
@@ -58,26 +62,28 @@ class _Spec(Generic[Entity]):
     def __init__(
         self,
         id: str,
-        entry_point: Optional[Union[Callable, str]] = None,
+        entry_point: Union[Callable, str],
+        deprecated: bool = False,
         nondeterministic: bool = False,
         kwargs: Optional[dict] = None,
     ):
         self.id = id
         self.entry_point = entry_point
+        self.deprecated = deprecated
         self.nondeterministic = nondeterministic
         self._kwargs = {} if kwargs is None else kwargs
 
         match = entity_id_re.search(id)
         if not match:
             raise ValueError(
-                f"Attempted to register malformed entity ID: {id}. "
+                f"Attempted to register malformed entity ID: [id={id}]. "
                 f"(Currently all IDs must be of the form {entity_id_re.pattern}.)"
             )
 
     def make(self, **kwargs) -> Entity:
         """Instantiates an instance of the entity."""
-        if self.entry_point is None:
-            raise ValueError(
+        if self.deprecated:
+            raise error.EntityIsDeprecated(
                 f"Attempting to make deprecated entity {self.id}. "
                 "(HINT: is there a newer registered version of this entity?)"
             )
@@ -120,7 +126,8 @@ class _Registry(Generic[Entity]):
     def register(
         self,
         id: str,
-        entry_point: Optional[Union[Callable, str]] = None,
+        entry_point: Union[Callable, str],
+        deprecated: bool = False,
         nondeterministic: bool = False,
         kwargs: Optional[dict] = None,
     ):
@@ -134,14 +141,24 @@ class _Registry(Generic[Entity]):
                 - the string path to the python object (e.g.module.name:factory_func, or
                   module.name:Class)
                 - the python object (class or factory) itself
-                Should be set to `None` to denote that the entity is now defunct, replaced by a
-                newer version.
+            deprecated: Flag to denote whether this entity should be skipped in validation runs and
+                considered deprecated and replaced by a more recent/better validation/model.
             nondeterministic: Whether this entity is non-deterministic even after seeding
             kwargs: The kwargs to pass to the entity entry point when instantiating the entity
         """
         if id in self.entity_specs:
-            raise ValueError(f"Cannot re-register ID {id}")
-        self.entity_specs[id] = _Spec(id, entry_point, nondeterministic, kwargs)
+            warnings.warn(
+                f"Entity with ID [id={id}] already registered, but the ID is now being used "
+                "to register another entity, OVERWRITING previous registered entity.",
+                UserWarning,
+            )
+        self.entity_specs[id] = _Spec(
+            id,
+            entry_point,
+            deprecated=deprecated,
+            nondeterministic=nondeterministic,
+            kwargs=kwargs,
+        )
 
 
 ModelSpec = _Spec[Model]

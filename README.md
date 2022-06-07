@@ -19,8 +19,8 @@ common pitfalls** that occur when attempting to make fair comparisons between mo
   - Register validations to a unique ID
   - Run all registered models through all registered validations, and have the results compiled and
     stored as a CSV
-  - Optionally passes an `artefacts_directory` to your validations, for storing of outputs for
-    further analysis, e.g. trained models or model predictions on test data sets
+  - Optionally passes an `artefacts_store_dir` to your validations, for storing of outputs
+    for further analysis, e.g. trained models or model predictions on test data sets
   - Doesn't enforce any constraints or requirements on your models' interfaces
   - Pure Python package, with no other setup or configuration of other systems required
 
@@ -35,6 +35,9 @@ pip install kotsu
 ```
 
 ## Usage
+
+The following demonstrates a simple usage of kotsu to register and validate multiple models over
+multiple validations.
 
 **Import kotsu and your packages for modelling:**
 
@@ -108,7 +111,7 @@ validation_registry.register(
 We choose the current directory as the location for writing the results.
 
 ```python
-kotsu.run(model_registry, validation_registry, "./")
+kotsu.run(model_registry, validation_registry)
 ```
 
 Then find the results from each model-validation combination in a CSV written to the current

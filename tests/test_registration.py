@@ -1,6 +1,6 @@
 import pytest
 
-from kotsu import registration
+from kotsu import error, registration
 
 
 def fake_entity_factory(param_1, param_2):
@@ -55,9 +55,9 @@ def test_registration(entry_point):
 def test_register_duplicate_id():
     registry = registration._Registry()
 
-    registry.register("Entity-v0")
-    with pytest.raises(ValueError, match=r"Cannot re-register ID"):
-        registry.register("Entity-v0")
+    registry.register("Entity-v0", "fake_entry_point")
+    with pytest.warns(UserWarning, match=r"Entity with ID \[id=Entity-v0] already registered.*"):
+        registry.register("Entity-v0", "fake_entry_point")
 
 
 def test_make_missing_entity():
@@ -70,9 +70,24 @@ def test_make_missing_entity():
 def test_make_deprecated_entity():
     registry = registration._Registry()
 
-    registry.register("Entity-v0", entry_point=None)
-    with pytest.raises(ValueError, match=r"Attempting to make deprecated entity"):
+    registry.register("Entity-v0", "fake_entry_point", deprecated=True)
+    with pytest.raises(error.EntityIsDeprecated, match=r"Attempting to make deprecated entity"):
         registry.make("Entity-v0")
+
+
+@pytest.mark.parametrize(
+    "good_id",
+    [
+        "user1/entity_name_1-v1",
+        "user1/entity_name_1_{param_1=10}_{param_2=relu}-v1",
+        "user1/entity_name_1-v12",
+        "user1/entity_name_1-v1.2.0",
+        "user1/entity:name.1_[param_1=10]_{param_2=relu}-v1",
+    ],
+)
+def test_well_formed_entity_id(good_id):
+    registry = registration._Registry()
+    registry.register(good_id, "fake_entry_point")
 
 
 @pytest.mark.parametrize(
@@ -88,4 +103,4 @@ def test_malformed_entity_id(bad_id):
     registry = registration._Registry()
 
     with pytest.raises(ValueError, match=r"Attempted to register malformed entity ID"):
-        registry.register(bad_id)
+        registry.register(bad_id, "fake_entry_point")

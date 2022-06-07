@@ -5,6 +5,25 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/),
 and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
 ## [Unreleased]
+### Added
+- Implemented skipping validation/model if it is deprecated
+- Added kotsu exception EntityIsDeprecated, and use instead of ValueError for deprecated entity
+
+### Changed
+- Changed entity ID regex to extend to more permissible and expressive IDs
+- Replaced kwarg `skip_if_prior_result` with `force_rerun` in `run`
+- Stop raising exception when registering entities with duplicate ID and raise warning instead
+- Replaced `entry_point=None` in entity spec with `deprecated=True`
+- Changed passing `artefacts_store_dir` to passing `validation_artefacts_dir` and
+  `model_artefacts_dir` explicitly to validations (when `artefacts_store_dir` is not None for
+  `run`).
+- Changed `..._directory` to `..._dir` in var names for brevity
+- Changed implicit kwarg for validations from `artefacts_directory` to `artefacts_store_directory`
+  to match `run` kwarg name
+
+### Fixed
+- Add run and registration to kotsu. imports
+- Docs Usage section updated with latest interface
 
 ## [v0.2.1] - 2021-10-12
 ### Added
