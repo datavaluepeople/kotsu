@@ -56,8 +56,6 @@ def run(
         results_df["runtime_secs"] = results_df["runtime_secs"].astype(int)
 
     results_df = results_df.set_index(["validation_id", "model_id"], drop=False)
-    results_list = []
-
     for validation_spec in validation_registry.all():
         if validation_spec.deprecated:
             logger.info(f"Skipping validation: {validation_spec.id} - as is deprecated.")
@@ -66,7 +64,6 @@ def run(
             if model_spec.deprecated:
                 logger.info(f"Skipping model: {model_spec.id} - as is deprecated.")
                 continue
-
             if (
                 not force_rerun == "all"
                 and not (isinstance(force_rerun, list) and model_spec.id in force_rerun)
@@ -91,15 +88,30 @@ def run(
             model = model_spec.make()
             results, elapsed_secs = _run_validation_model(validation, model, run_params)
             results = _add_meta_data_to_results(results, elapsed_secs, validation_spec, model_spec)
-            results_list.append(results)
 
-    additional_results_df = pd.DataFrame.from_records(results_list)
+            results_df = _save_results(results, results_df, results_path)
+
+
+def _save_results(results: dict, results_df: pd.DataFrame, results_path: str):
+    """Prepare model-validation combination results for saving in store.write.
+
+    Args:
+        results: dictionaries containing the key result scores for the current
+            model/validation combination.
+        results_df: The main DataFrame containing previous results, if any,
+             and to which new results contents are transferred.
+        results_path: The path where results_df is saved.
+    """
+    additional_results_df = pd.DataFrame.from_records([results])
     results_df = results_df.append(additional_results_df, ignore_index=True)
     results_df = results_df.drop_duplicates(subset=["validation_id", "model_id"], keep="last")
     results_df = results_df.sort_values(by=["validation_id", "model_id"]).reset_index(drop=True)
     store.write(
         results_df, results_path, to_front_cols=["validation_id", "model_id", "runtime_secs"]
     )
+    results_df = results_df.set_index(["validation_id", "model_id"], drop=False)
+
+    return results_df
 
 
 def _form_validation_partial_with_store_dirs(
