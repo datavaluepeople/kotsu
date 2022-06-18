@@ -52,6 +52,16 @@ def test_registration(entry_point):
     assert all_specs[1].id == "SomeEntity-v1"
 
 
+def test_spec_repr():
+    registry = registration._Registry()
+    registry.register(
+        id="SomeEntity-v0",
+        entry_point="tests.test_registration:fake_entity_factory",
+        kwargs={"param_1": "PARAM_1", "param_2": "PARAM_2"},
+    )
+    repr(registry.entity_specs["SomeEntity-v0"])
+
+
 def test_register_duplicate_id():
     registry = registration._Registry()
 
