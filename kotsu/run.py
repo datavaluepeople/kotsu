@@ -24,7 +24,7 @@ def run(
     force_rerun: Optional[Union[Literal["all"], List[str]]] = None,
     artefacts_store_dir: Optional[str] = None,
     run_params: Optional[dict] = None,
-):
+) -> pd.DataFrame:
     """Run a registry of models through a registry of validations.
 
     Args:
@@ -45,6 +45,9 @@ def run(
             If not None, then validations will be passed two kwargs; `validation_artefacts_dir` and
             `model_artefacts_dir`.
         run_params: A dictionary of optional run parameters.
+
+    Returns:
+        pd.DataFrame: dataframe of validation results.
     """
     if run_params is None:
         run_params = {}
@@ -100,6 +103,7 @@ def run(
     store.write(
         results_df, results_path, to_front_cols=["validation_id", "model_id", "runtime_secs"]
     )
+    return results_df
 
 
 def _form_validation_partial_with_store_dirs(

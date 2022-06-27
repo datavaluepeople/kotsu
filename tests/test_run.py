@@ -44,7 +44,7 @@ def test_form_results(mocker, tmpdir):
     validation_registry = FakeRegistry(validations)
 
     results_path = str(tmpdir) + "validation_results.csv"
-    kotsu.run.run(model_registry, validation_registry, results_path=results_path)
+    out_df = kotsu.run.run(model_registry, validation_registry, results_path=results_path)
 
     results_df = pd.DataFrame(
         [
@@ -63,6 +63,7 @@ def test_form_results(mocker, tmpdir):
         ]
     )
 
+    pd.testing.assert_frame_equal(out_df, results_df)
     assert patched_run_validation_model.call_count == 2
     pd.testing.assert_frame_equal(
         patched_store_write.call_args[0][0],
@@ -152,13 +153,12 @@ def test_force_rerun(force_rerun, mocker, tmpdir):
     validation_registry = FakeRegistry(validations)
 
     results_path = str(tmpdir) + "validation_results.csv"
-    kotsu.run.run(
+    out_df = kotsu.run.run(
         model_registry,
         validation_registry,
         results_path=results_path,
         force_rerun=force_rerun,
     )
-    out_df = pd.read_csv(results_path)
 
     results_df = pd.DataFrame(
         [
@@ -180,13 +180,12 @@ def test_force_rerun(force_rerun, mocker, tmpdir):
     assert patched_run_validation_model.call_count == 2
     pd.testing.assert_frame_equal(out_df, results_df)
 
-    kotsu.run.run(
+    out_df = kotsu.run.run(
         model_registry,
         validation_registry,
         results_path=results_path,
         force_rerun=force_rerun,
     )
-    out_df = pd.read_csv(results_path)
 
     if force_rerun is None:
         assert patched_run_validation_model.call_count == 2
