@@ -1,4 +1,5 @@
 import logging
+import sys
 from unittest import mock
 
 import pandas as pd
@@ -256,3 +257,88 @@ def test_raise_if_valiation_returns_privilidged_key_name(result, mocker, tmpdir)
             validation_registry,
             results_path=results_path,
         )
+
+
+def _add_meta_data_mock_fail(results, elapsed_secs, validation_spec, model_spec):
+    if model_spec.id == "model_2":
+        sys.exit()
+    else:
+        return _add_meta_data_mock(results, elapsed_secs, validation_spec, model_spec)
+
+
+def _add_meta_data_mock(results, elapsed_secs, validation_spec, model_spec):
+    results_meta_data = {
+        "validation_id": validation_spec.id,
+        "model_id": model_spec.id,
+        "runtime_secs": elapsed_secs,
+    }
+
+    return {**results, **results_meta_data}
+
+
+def test_interruption_results_saving(mocker, tmpdir):
+    patched_run_validation_model = mocker.patch(
+        "kotsu.run._run_validation_model",
+        side_effect=[
+            ({"test_result": "result_1"}, 10),
+            ({"test_result": "result_2"}, 20),
+            ({"test_result": "result_3"}, 30),
+        ],
+    )
+
+    models = ["model_1", "model_2"]
+    model_registry = FakeRegistry(models)
+    validations = ["validation_1"]
+    validation_registry = FakeRegistry(validations)
+
+    results_path = str(tmpdir) + "validation_results.csv"
+
+    # 1 - check that if code exits before saving model 2, model 1 is still saved
+    _ = mocker.patch("kotsu.run._add_meta_data_to_results", side_effect=_add_meta_data_mock_fail)
+
+    with pytest.raises(SystemExit):
+        kotsu.run.run(
+            model_registry,
+            validation_registry,
+            results_path=results_path,
+        )
+    out_df = pd.read_csv(results_path)
+
+    results_df_failed = pd.DataFrame(
+        [
+            {
+                "validation_id": "validation_1",
+                "model_id": "model_1",
+                "runtime_secs": 10,
+                "test_result": "result_1",
+            },
+        ]
+    )
+    assert patched_run_validation_model.call_count == 2
+    pd.testing.assert_frame_equal(out_df, results_df_failed)
+
+    # 2 - if running again (no fail) then check that
+    # (a) we have only called the validation once more (not twice)
+    # (b) all the results are saved
+    _ = mocker.patch("kotsu.run._add_meta_data_to_results", side_effect=_add_meta_data_mock)
+    kotsu.run.run(model_registry, validation_registry, results_path=results_path)
+    out_df = pd.read_csv(results_path)
+
+    results_df_all = pd.DataFrame(
+        [
+            {
+                "validation_id": "validation_1",
+                "model_id": "model_1",
+                "runtime_secs": 10,
+                "test_result": "result_1",
+            },
+            {
+                "validation_id": "validation_1",
+                "model_id": "model_2",
+                "runtime_secs": 30,
+                "test_result": "result_3",
+            },
+        ]
+    )
+    assert patched_run_validation_model.call_count == 3
+    pd.testing.assert_frame_equal(out_df, results_df_all)
