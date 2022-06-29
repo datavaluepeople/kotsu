@@ -5,6 +5,8 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/),
 and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
 ## [Unreleased]
+### Added
+- `run` now returns validation results dataframe
 ### Fixed
 - Added `typing_extensions` as a project dependency, where it wasn't specified before.
 
