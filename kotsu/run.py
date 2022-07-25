@@ -24,6 +24,8 @@ def run(
     force_rerun: Optional[Union[Literal["all"], List[str]]] = None,
     artefacts_store_dir: Optional[str] = None,
     run_params: Optional[dict] = None,
+    validation_prefix: str = "validation",
+    model_prefix: str = "model",
 ) -> pd.DataFrame:
     """Run a registry of models through a registry of validations.
 
@@ -45,6 +47,8 @@ def run(
             If not None, then validations will be passed two kwargs; `validation_artefacts_dir` and
             `model_artefacts_dir`.
         run_params: A dictionary of optional run parameters.
+        validation_prefix: Prefix to use for validation ids in results.
+        model_prefix: Prefix to use for model ids in results.
 
     Returns:
         pd.DataFrame: dataframe of validation results.
@@ -55,10 +59,14 @@ def run(
     try:
         results_df = pd.read_csv(results_path)
     except FileNotFoundError:
-        results_df = pd.DataFrame(columns=["validation_id", "model_id", "runtime_secs"])
+        results_df = pd.DataFrame(
+            columns=[f"{validation_prefix}_id", f"{model_prefix}_id", "runtime_secs"]
+        )
         results_df["runtime_secs"] = results_df["runtime_secs"].astype(int)
 
-    results_df = results_df.set_index(["validation_id", "model_id"], drop=False)
+    results_df = results_df.set_index(
+        [f"{validation_prefix}_id", f"{model_prefix}_id"], drop=False
+    )
     results_list = []
 
     for validation_spec in validation_registry.all():
@@ -93,15 +101,28 @@ def run(
 
             model = model_spec.make()
             results, elapsed_secs = _run_validation_model(validation, model, run_params)
-            results = _add_meta_data_to_results(results, elapsed_secs, validation_spec, model_spec)
+            results = _add_meta_data_to_results(
+                results,
+                elapsed_secs,
+                validation_spec,
+                model_spec,
+                validation_prefix=validation_prefix,
+                model_prefix=model_prefix,
+            )
             results_list.append(results)
 
     additional_results_df = pd.DataFrame.from_records(results_list)
     results_df = results_df.append(additional_results_df, ignore_index=True)
-    results_df = results_df.drop_duplicates(subset=["validation_id", "model_id"], keep="last")
-    results_df = results_df.sort_values(by=["validation_id", "model_id"]).reset_index(drop=True)
+    results_df = results_df.drop_duplicates(
+        subset=[f"{validation_prefix}_id", f"{model_prefix}_id"], keep="last"
+    )
+    results_df = results_df.sort_values(
+        by=[f"{validation_prefix}_id", f"{model_prefix}_id"]
+    ).reset_index(drop=True)
     store.write(
-        results_df, results_path, to_front_cols=["validation_id", "model_id", "runtime_secs"]
+        results_df,
+        results_path,
+        to_front_cols=[f"{validation_prefix}_id", f"{model_prefix}_id", "runtime_secs"],
     )
     return results_df
 
@@ -135,11 +156,13 @@ def _add_meta_data_to_results(
     elapsed_secs: float,
     validation_spec: ValidationSpec,
     model_spec: ModelSpec,
+    validation_prefix: str = "validation",
+    model_prefix: str = "model",
 ) -> Results:
     """Add meta data to results, raising if keys clash."""
     results_meta_data: Results = {
-        "validation_id": validation_spec.id,
-        "model_id": model_spec.id,
+        f"{validation_prefix}_id": validation_spec.id,
+        f"{model_prefix}_id": model_spec.id,
         "runtime_secs": elapsed_secs,
     }
     if bool(set(results) & set(results_meta_data)):
