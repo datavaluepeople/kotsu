@@ -31,20 +31,31 @@ class FakeRegistry:
         return self.entitys
 
 
-def test_form_results(mocker, tmpdir):
+@pytest.fixture
+def fake_model_registry():
+    models = ["model_1", "model_2"]
+    model_registry = FakeRegistry(models)
+    return model_registry
+
+
+@pytest.fixture
+def fake_validation_registry():
+    validations = ["validation_1"]
+    validation_registry = FakeRegistry(validations)
+    return validation_registry
+
+
+def test_form_results(mocker, tmpdir, fake_model_registry, fake_validation_registry):
     patched_run_validation_model = mocker.patch(
         "kotsu.run._run_validation_model",
         side_effect=[({"test_result": "result"}, 10), ({"test_result": "result_2"}, 20)],
     )
     patched_store_write = mocker.patch("kotsu.store.write")
 
-    models = ["model_1", "model_2"]
-    model_registry = FakeRegistry(models)
-    validations = ["validation_1"]
-    validation_registry = FakeRegistry(validations)
-
     results_path = str(tmpdir) + "validation_results.csv"
-    out_df = kotsu.run.run(model_registry, validation_registry, results_path=results_path)
+    out_df = kotsu.run.run(
+        fake_model_registry, fake_validation_registry, results_path=results_path
+    )
 
     results_df = pd.DataFrame(
         [
@@ -57,6 +68,50 @@ def test_form_results(mocker, tmpdir):
             {
                 "validation_id": "validation_1",
                 "model_id": "model_2",
+                "runtime_secs": 20,
+                "test_result": "result_2",
+            },
+        ]
+    )
+
+    pd.testing.assert_frame_equal(out_df, results_df)
+    assert patched_run_validation_model.call_count == 2
+    pd.testing.assert_frame_equal(
+        patched_store_write.call_args[0][0],
+        results_df,
+    )
+    assert patched_store_write.call_args[0][1] == results_path
+
+
+def test_form_results_custom_prefixes(
+    mocker, tmpdir, fake_model_registry, fake_validation_registry
+):
+    patched_run_validation_model = mocker.patch(
+        "kotsu.run._run_validation_model",
+        side_effect=[({"test_result": "result"}, 10), ({"test_result": "result_2"}, 20)],
+    )
+    patched_store_write = mocker.patch("kotsu.store.write")
+
+    results_path = str(tmpdir) + "validation_results.csv"
+    out_df = kotsu.run.run(
+        fake_model_registry,
+        fake_validation_registry,
+        results_path=results_path,
+        validation_prefix="task",
+        model_prefix="estimator",
+    )
+
+    results_df = pd.DataFrame(
+        [
+            {
+                "task_id": "validation_1",
+                "estimator_id": "model_1",
+                "runtime_secs": 10,
+                "test_result": "result",
+            },
+            {
+                "task_id": "validation_1",
+                "estimator_id": "model_2",
                 "runtime_secs": 20,
                 "test_result": "result_2",
             },
