@@ -97,7 +97,7 @@ def run(
             results_list.append(results)
 
     additional_results_df = pd.DataFrame.from_records(results_list)
-    results_df = results_df.append(additional_results_df, ignore_index=True)
+    results_df = pd.concat([results_df, additional_results_df], ignore_index=True)
     results_df = results_df.drop_duplicates(subset=["validation_id", "model_id"], keep="last")
     results_df = results_df.sort_values(by=["validation_id", "model_id"]).reset_index(drop=True)
     store.write(

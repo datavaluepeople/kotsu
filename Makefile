@@ -5,11 +5,8 @@ all: lint test
 install:
 	pip install -r requirements.dev.txt  -e .
 
-compile:
-	pip-compile setup.py && pip-compile requirements.dev.in
-
 upgrade:
-	pip-compile --upgrade setup.py && pip-compile --upgrade requirements.dev.in
+	pip install --upgrade -r requirements.dev.txt  -e .
 
 lint:
 	flake8 .
