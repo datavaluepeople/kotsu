@@ -113,7 +113,7 @@ class _Registry(Generic[Entity]):
 
     def make(self, id: str, **kwargs) -> Entity:
         """Instantiate an instance of an entity of the given ID."""
-        logging.info(f"Making new entity: {id} ({kwargs})")
+        logger.info(f"Making new entity: {id} ({kwargs})")
         try:
             return self.entity_specs[id].make(**kwargs)
         except KeyError:

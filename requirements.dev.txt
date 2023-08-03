@@ -8,4 +8,4 @@ pytest-mock
 pytest-cov
 twine
 
-sklearn
+scikit-learn
