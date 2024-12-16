@@ -121,7 +121,11 @@ class _Registry(Generic[Entity]):
 
     def all(self):
         """Return all the entitys in the registry."""
-        return self.entity_specs.values()
+        return list(self.entity_specs.values())
+    
+    def get(self, id: str) -> _Spec[Any]:
+        """Return entity spec by id."""
+        return self.entity_specs[id]
 
     def register(
         self,
