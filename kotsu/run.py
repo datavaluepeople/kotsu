@@ -1,4 +1,5 @@
 """Interface for running a registry of models on a registry of validations."""
+
 from typing import List, Optional, Tuple, Union
 from typing_extensions import Literal
 from kotsu.typing import Model, Results, Validation

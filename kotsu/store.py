@@ -1,4 +1,5 @@
 """Functionality for storing validation results."""
+
 from typing import List
 
 import pandas as pd
