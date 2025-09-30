@@ -67,6 +67,17 @@ model_registry.register(
 )
 ```
 
+**Instantiate a registered model:**
+
+If you want to use your registries outside of `kotsu.run`, you can create model
+instances directly from their registered IDs. This is useful if you want to run
+an ad-hoc validation or interact with a model in an interactive environment
+without running the full benchmarking loop.
+
+```python
+model_instance = model_registry.make("SVC-v1")
+```
+
 **Register your validations:**
 
 You can register multiple validations if you want to compare models in different scenarios, e.g. on
