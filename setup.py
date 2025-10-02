@@ -24,6 +24,6 @@ setup(
     license="MIT",
     packages=find_packages(),
     install_requires=REQUIREMENTS,
-    python_requires=">=3.7",
+    python_requires=">=3.9",
     cmdclass=versioneer.get_cmdclass(),
 )

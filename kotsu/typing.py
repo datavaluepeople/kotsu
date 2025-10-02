@@ -2,6 +2,7 @@
 
 Mainly for documentation purposes.
 """
+
 from typing import Any, Callable, Dict, Union
 
 
