@@ -7,6 +7,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 ## [Unreleased]
 #### Development
 - Updated python versions in CI workflows
+- Updated codecov action version in CI workflows
 
 ## [v0.3.3] - 2023-08-03
 ### Fixed

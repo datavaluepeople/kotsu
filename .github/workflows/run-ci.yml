@@ -9,6 +9,9 @@ jobs:
   build:
 
     runs-on: ubuntu-latest
+    permissions:
+      contents: read
+      id-token: write
     strategy:
       matrix:
         python-version: ["3.9", "3.10", "3.11", "3.12"]
@@ -28,6 +31,7 @@ jobs:
         make
     - name: Upload coverage to Codecov
       if: ${{ matrix.python-version == '3.11' }}
-      uses: codecov/codecov-action@v1
+      uses: codecov/codecov-action@v5
       with:
         fail_ci_if_error: true
+        use_oidc: true
