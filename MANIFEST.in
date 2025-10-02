@@ -1,2 +1,2 @@
 include versioneer.py
-include comp/_version.py
+include kotsu/_version.py

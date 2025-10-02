@@ -8,6 +8,8 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 #### Development
 - Updated python versions in CI workflows
 - Updated codecov action version in CI workflows
+- Documented conda-forge release workflow and added conda-forge badges to README
+- Fixed versioneer configuration to ship the generated `_version.py` in source distributions
 
 ## [v0.3.3] - 2023-08-03
 ### Fixed
