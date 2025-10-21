@@ -5,10 +5,13 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/),
 and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
 ## [Unreleased]
-#### Development
-- Updated python versions in CI workflows
-- Updated codecov action version in CI workflows
+### Removed
+- Dropped support for Python 3.7 and 3.8. Minimum required version is now Python 3.9.
+
+### Changed
 - Documented conda-forge release workflow and added conda-forge badges to README
+
+### Fixed
 - Fixed versioneer configuration to ship the generated `_version.py` in source distributions
 
 ## [v0.3.3] - 2023-08-03
