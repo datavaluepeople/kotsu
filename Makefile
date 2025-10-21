@@ -9,18 +9,16 @@ upgrade:
 	pip install --upgrade -r requirements.dev.txt  -e .
 
 lint:
-	flake8 .
-	pydocstyle kotsu
-	isort --check-only .
-	black --check .
+	ruff check .
+	ruff format --check .
 	mypy kotsu
 
 test:
 	pytest tests
 
 format:
-	isort .
-	black .
+	ruff check --fix .
+	ruff format .
 
 package:
 	python setup.py sdist

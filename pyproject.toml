@@ -1,2 +1,36 @@
-[tool.black]
+[tool.ruff]
 line-length = 99
+target-version = "py39"
+extend-exclude = ["versioneer.py", "kotsu/_version.py"]
+
+[tool.ruff.lint]
+select = [
+    "E",      # pycodestyle errors
+    "W",      # pycodestyle warnings
+    "F",      # pyflakes
+    "I",      # isort
+    "C90",    # mccabe complexity
+    "D",      # pydocstyle
+    "UP",     # pyupgrade
+]
+ignore = [
+    "D105",   # missing docstring in magic method
+    "D107",   # missing docstring in __init__
+]
+mccabe.max-complexity = 10
+
+[tool.ruff.lint.per-file-ignores]
+"tests/**/*.py" = ["D"]
+"setup.py" = ["D100"]
+
+[tool.ruff.lint.pydocstyle]
+convention = "google"
+
+[tool.ruff.lint.isort]
+lines-after-imports = 2
+known-first-party = ["kotsu"]
+section-order = ["typing", "future", "standard-library", "third-party", "first-party", "local-folder"]
+
+[tool.ruff.lint.isort.sections]
+"typing" = ["typing", "typing_extensions", "kotsu.typing"]
+
