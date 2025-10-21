@@ -1,7 +1,41 @@
+[build-system]
+requires = ["setuptools>=64", "setuptools-scm>=8"]
+build-backend = "setuptools.build_meta"
+
+[project]
+name = "kotsu"
+dynamic = ["version"]
+description = "Lightweight framework for structured and repeatable model validation"
+readme = "README.md"
+authors = [
+    {name = "datavaluepeople", email = "opensource@datavaluepeople.com"}
+]
+license = "MIT"
+requires-python = ">=3.9"
+dependencies = [
+    "pandas",
+    "typing_extensions",
+]
+classifiers = [
+    "Programming Language :: Python :: 3",
+    "Programming Language :: Python :: 3.9",
+    "Programming Language :: Python :: 3.10",
+    "Programming Language :: Python :: 3.11",
+    "Programming Language :: Python :: 3.12",
+]
+
+[project.urls]
+Homepage = "https://github.com/datavaluepeople/kotsu"
+Repository = "https://github.com/datavaluepeople/kotsu"
+
+[tool.setuptools]
+packages = ["kotsu"]
+
+[tool.setuptools_scm]
+
 [tool.ruff]
 line-length = 99
 target-version = "py39"
-extend-exclude = ["versioneer.py", "kotsu/_version.py"]
 
 [tool.ruff.lint]
 select = [
@@ -59,12 +93,11 @@ follow_imports = "normal"
 namespace_packages = true
 # mypy prepends errors with the corresponding error code
 show_error_codes = true
-exclude = ["versioneer\\.py", "kotsu/_version\\.py"]
+exclude = []
 
 [tool.pytest.ini_options]
 addopts = "--cov=./kotsu --cov-report xml --cov-report term"
 
 [tool.coverage.run]
-# Omit auto-generated versioneer file from test coverage
-omit = ["kotsu/_version.py"]
+omit = []
 
