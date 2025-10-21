@@ -255,3 +255,46 @@ def test_raise_if_valiation_returns_privilidged_key_name(result, mocker, tmpdir)
             validation_registry,
             results_path=results_path,
         )
+
+
+def test_incremental_save_on_exception(mocker, tmpdir):
+    """Test that results are saved incrementally even when a later model raises an exception."""
+    patched_run_validation_model = mocker.patch(
+        "kotsu.run._run_validation_model",
+        side_effect=[
+            ({"test_result": "result_1"}, 10),
+            ({"test_result": "result_2"}, 20),
+            Exception("Model 3 failed"),
+        ],
+    )
+    patched_store_write = mocker.patch("kotsu.store.write")
+
+    models = ["model_1", "model_2", "model_3"]
+    model_registry = FakeRegistry(models)
+    validations = ["validation_1"]
+    validation_registry = FakeRegistry(validations)
+
+    results_path = str(tmpdir) + "validation_results.csv"
+
+    # Run should raise exception from third model
+    with pytest.raises(Exception, match="Model 3 failed"):
+        kotsu.run.run(model_registry, validation_registry, results_path=results_path)
+
+    # Verify that first two models ran
+    assert patched_run_validation_model.call_count == 3
+
+    # Verify store.write was called twice (once for each successful model before exception)
+    assert patched_store_write.call_count == 2
+
+    # Verify first write had model_1 results
+    first_write_df = patched_store_write.call_args_list[0][0][0]
+    assert len(first_write_df) == 1
+    assert first_write_df.iloc[0]["model_id"] == "model_1"
+    assert first_write_df.iloc[0]["test_result"] == "result_1"
+
+    # Verify second write had both model_1 and model_2 results
+    second_write_df = patched_store_write.call_args_list[1][0][0]
+    assert len(second_write_df) == 2
+    assert second_write_df.iloc[0]["model_id"] == "model_1"
+    assert second_write_df.iloc[1]["model_id"] == "model_2"
+    assert second_write_df.iloc[1]["test_result"] == "result_2"
