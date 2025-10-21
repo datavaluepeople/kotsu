@@ -1,8 +1,8 @@
 """Interface for running a registry of models on a registry of validations."""
 
-from typing import List, Optional, Tuple, Union
-from typing_extensions import Literal
 from kotsu.typing import Model, Results, Validation
+from typing import Optional, Union
+from typing_extensions import Literal
 
 import functools
 import logging
@@ -22,7 +22,7 @@ def run(
     model_registry: ModelRegistry,
     validation_registry: ValidationRegistry,
     results_path: str = "./validation_results.csv",
-    force_rerun: Optional[Union[Literal["all"], List[str]]] = None,
+    force_rerun: Optional[Union[Literal["all"], list[str]]] = None,
     artefacts_store_dir: Optional[str] = None,
     run_params: Optional[dict] = None,
 ) -> pd.DataFrame:
@@ -153,17 +153,15 @@ def _add_meta_data_to_results(
     }
     if bool(set(results) & set(results_meta_data)):
         raise ValueError(
-            (
-                f"Validation:{validation_spec.id} on model:{model_spec.id} "
-                f"returned results:{results} which contains a privileged key name."
-            )
+            f"Validation:{validation_spec.id} on model:{model_spec.id} "
+            f"returned results:{results} which contains a privileged key name."
         )
     return {**results, **results_meta_data}
 
 
 def _run_validation_model(
     validation: Validation, model: Model, run_params: dict
-) -> Tuple[Results, float]:
+) -> tuple[Results, float]:
     """Run given validation on given model, and store the results.
 
     Returns:

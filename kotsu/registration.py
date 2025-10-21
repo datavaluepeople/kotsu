@@ -6,8 +6,8 @@ which can be passed to kotsu's run interface.
 Based on: https://github.com/openai/gym/blob/master/gym/envs/registration.py
 """
 
-from typing import Callable, Generic, Optional, TypeVar, Union
 from kotsu.typing import Model, Validation
+from typing import Callable, Generic, Optional, TypeVar, Union
 
 import importlib
 import logging
@@ -99,7 +99,7 @@ class _Spec(Generic[Entity]):
         return entity
 
     def __repr__(self):
-        return "Spec({})".format(self.id)
+        return f"Spec({self.id})"
 
 
 class _Registry(Generic[Entity]):
