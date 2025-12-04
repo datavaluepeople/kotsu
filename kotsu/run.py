@@ -59,9 +59,6 @@ def run(
         results_df = pd.DataFrame(columns=["validation_id", "model_id", "runtime_secs"])
         results_df["runtime_secs"] = results_df["runtime_secs"].astype(int)
 
-    results_df = results_df.set_index(["validation_id", "model_id"], drop=False)
-    results_list = []
-
     for validation_spec in validation_registry.all():
         if validation_spec.deprecated:
             logger.info(f"Skipping validation: {validation_spec.id} - as is deprecated.")
@@ -71,10 +68,14 @@ def run(
                 logger.info(f"Skipping model: {model_spec.id} - as is deprecated.")
                 continue
 
+            # Skip if prior result exists for this validation-model combination, unless force-rerun
             if (
-                not force_rerun == "all"
+                (
+                    (results_df["validation_id"] == validation_spec.id)
+                    & (results_df["model_id"] == model_spec.id)
+                ).any()
+                and not force_rerun == "all"
                 and not (isinstance(force_rerun, list) and model_spec.id in force_rerun)
-                and (validation_spec.id, model_spec.id) in results_df.index
             ):
                 logger.info(
                     f"Skipping validation - model: {validation_spec.id} - {model_spec.id}"
@@ -95,15 +96,22 @@ def run(
             model = model_spec.make()
             results, elapsed_secs = _run_validation_model(validation, model, run_params)
             results = _add_meta_data_to_results(results, elapsed_secs, validation_spec, model_spec)
-            results_list.append(results)
 
-    additional_results_df = pd.DataFrame.from_records(results_list)
-    results_df = pd.concat([results_df, additional_results_df], ignore_index=True)
-    results_df = results_df.drop_duplicates(subset=["validation_id", "model_id"], keep="last")
-    results_df = results_df.sort_values(by=["validation_id", "model_id"]).reset_index(drop=True)
-    store.write(
-        results_df, results_path, to_front_cols=["validation_id", "model_id", "runtime_secs"]
-    )
+            # Save result immediately
+            new_row_df = pd.DataFrame.from_records([results])
+            results_df = pd.concat([results_df, new_row_df], ignore_index=True)
+            results_df = results_df.drop_duplicates(
+                subset=["validation_id", "model_id"], keep="last"
+            )
+            results_df = results_df.sort_values(by=["validation_id", "model_id"]).reset_index(
+                drop=True
+            )
+            store.write(
+                results_df,
+                results_path,
+                to_front_cols=["validation_id", "model_id", "runtime_secs"],
+            )
+
     return results_df
 
 

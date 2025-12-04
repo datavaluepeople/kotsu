@@ -9,6 +9,8 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 - Dropped support for Python 3.7 and 3.8. Minimum required version is now Python 3.9.
 
 ### Changed
+- Results are now saved incrementally after each validation-model run completes, rather than
+  batching all results and saving at the end
 - Documented conda-forge release workflow and added conda-forge badges to README
 
 ### Fixed
