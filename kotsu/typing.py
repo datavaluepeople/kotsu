@@ -3,7 +3,7 @@
 Mainly for documentation purposes.
 """
 
-from typing import Any, Callable, Dict, Union
+from typing import Any, Callable, Union
 
 
 # The results from a validation run on a particular model.
@@ -12,7 +12,7 @@ from typing import Any, Callable, Dict, Union
 # put into the same matching column.
 # An example result from a 3-fold cross validation might be:
 # `{"average_score": _, "standard_deviation_scores": _, "fold_1_score": _, "fold_2_score"...}`
-Results = Dict[str, Union[float, str]]
+Results = dict[str, Union[float, str]]
 
 # Models within kotsu are not constrained in any way. It is up to the user to write Models that
 # have an interface compatible with their Validations.

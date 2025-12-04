@@ -1,2 +1,70 @@
-[tool.black]
+[tool.ruff]
 line-length = 99
+target-version = "py39"
+extend-exclude = ["versioneer.py", "kotsu/_version.py"]
+
+[tool.ruff.lint]
+select = [
+    "E",      # pycodestyle errors
+    "W",      # pycodestyle warnings
+    "F",      # pyflakes
+    "I",      # isort
+    "C90",    # mccabe complexity
+    "D",      # pydocstyle
+    "UP",     # pyupgrade
+]
+ignore = [
+    "D105",   # missing docstring in magic method
+    "D107",   # missing docstring in __init__
+]
+mccabe.max-complexity = 10
+
+[tool.ruff.lint.per-file-ignores]
+"tests/**/*.py" = ["D"]
+"setup.py" = ["D100"]
+
+[tool.ruff.lint.pydocstyle]
+convention = "google"
+
+[tool.ruff.lint.isort]
+lines-after-imports = 2
+known-first-party = ["kotsu"]
+section-order = ["typing", "future", "standard-library", "third-party", "first-party", "local-folder"]
+
+[tool.ruff.lint.isort.sections]
+"typing" = ["typing", "typing_extensions", "kotsu.typing"]
+
+[tool.mypy]
+# mypy uses a cache to speed up checking
+incremental = true
+# mypy will error if a config is set but not necessary
+warn_unused_configs = true
+# mypy will error if ignore comment is use on non-erroring line
+warn_unused_ignores = true
+# mypy will check the body of defs even if they don't have type sig
+check_untyped_defs = true
+# mypy will error if an unnecessary cast is used
+warn_redundant_casts = true
+# setting default arg to None still requires `Optional`
+no_implicit_optional = true
+# mypy checks the use of None values
+strict_optional = true
+# mypy ignores if an import can't be found, this is necessary for not throwing errors when
+# when importing external (3rd party) modules
+ignore_missing_imports = true
+# mypy follows and checks imported modules, gives more coverage
+follow_imports = "normal"
+# mypy follows and checks imported modules even without __init__.py
+# WARN: this will still miss non-imported modules like test files with __init__.py!
+namespace_packages = true
+# mypy prepends errors with the corresponding error code
+show_error_codes = true
+exclude = ["versioneer\\.py", "kotsu/_version\\.py"]
+
+[tool.pytest.ini_options]
+addopts = "--cov=./kotsu --cov-report xml --cov-report term"
+
+[tool.coverage.run]
+# Omit auto-generated versioneer file from test coverage
+omit = ["kotsu/_version.py"]
+
