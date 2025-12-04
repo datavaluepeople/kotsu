@@ -21,9 +21,8 @@ format:
 	ruff format .
 
 package:
-	python setup.py sdist
-	python setup.py bdist_wheel
+	python -m build
 
 
 release: package
-	twine upload dist/*
+	python -m twine upload dist/*

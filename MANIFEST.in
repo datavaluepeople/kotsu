@@ -1,2 +1,0 @@
-include versioneer.py
-include kotsu/_version.py
